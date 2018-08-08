@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="EditValueView">
+        <attr name="editvalueview_multiLine" format="boolean"/>
+        <attr name="editvalueview_decimal" format="integer"/>
+        <attr name="editvalueview_suffix" format="string"/>
+        <attr name="editvalueview_text" format="string"/>
+    </declare-styleable>
+</resources>

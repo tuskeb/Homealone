@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:id="@+id/editvalueLayout">
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Érték"
+            android:textAlignment="center"
+            android:id="@+id/editvalueText"/>
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editvalueSeekbar"/>
+    </LinearLayout>
+    <hu.csanyzeg.android.homealone.UI.NumberView
+        android:id="@+id/editvalueValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:textAlignment="center"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.3"
+        app:numberview_multiLine="false"/>
+</LinearLayout>

@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/fullSensorView">
+    <hu.csanyzeg.android.homealone.UI.NameView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:id="@+id/fullSensorNameView"></hu.csanyzeg.android.homealone.UI.NameView>
+    <hu.csanyzeg.android.homealone.UI.GraphNumberSensorView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/fullSensorGraphView"></hu.csanyzeg.android.homealone.UI.GraphNumberSensorView>
+    <hu.csanyzeg.android.homealone.UI.EditValueView
+        android:layout_width="match_parent"
+        app:editvalueview_text="Riasztási maximum"
+        app:editvalueview_multiLine="false"
+        android:layout_height="wrap_content"
+        android:id="@+id/alarmMaxView"></hu.csanyzeg.android.homealone.UI.EditValueView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="20dp"
+        android:textSize="14dp"
+        android:layout_marginTop="10dp"
+        android:text="Riasztás mindenképp"
+        android:id="@+id/alarmTextAlarm"/>
+</LinearLayout>

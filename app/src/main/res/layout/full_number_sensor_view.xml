@@ -1,0 +1,20 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/fullSensorView"
+    >
+    <hu.csanyzeg.android.homealone.UI.NameView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fullSensorNameView"></hu.csanyzeg.android.homealone.UI.NameView>
+    <hu.csanyzeg.android.homealone.UI.GraphNumberSensorView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fullSensorGraphView"></hu.csanyzeg.android.homealone.UI.GraphNumberSensorView>
+
+</LinearLayout>
+
+
+
