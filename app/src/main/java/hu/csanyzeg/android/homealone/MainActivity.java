@@ -51,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             refreshUI(databaseService.getDataHashMap(), databaseService.getConfigs());
                         }
                         break;
+                    case DatabaseService.BR_LOCATION_CHANGE:
+                        if (databaseService != null) {
+                            setTitle(getString(R.string.app_name) + " (" + String.format("%.1f km", databaseService.getDistanceFromHomeInMeters() / 1000f) +")");
+                        }
+                        break;
                 }
             }
         }

@@ -1,15 +1,19 @@
 package hu.csanyzeg.android.homealone.UI;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
+import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Interfaces.Switch;
 import hu.csanyzeg.android.homealone.R;
@@ -53,15 +57,43 @@ public class SwitchFullBoolSensorView extends FullBoolSensorView implements Swit
     CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-            setFastPolling();
+            final boolean[] cancel = {false};
             if (b) {
-                if (onCheckChangeListener != null) {
-                    onCheckChangeListener.onChangeValueTrue();
+                if (getConfig().distance!=null && getConfig().distance < Data.GPSDistanceInMeter) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                    alert.setTitle(getConfig().display);
+                    alert.setMessage("A légvonalban mért távolság otthonról nagyobb, mint " + getConfig().distance + " m. Folytatja a műveletet?");
+
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            cancel[0] = false;
+                            if (onCheckChangeListener != null) {
+                                onCheckChangeListener.onChangeValueTrue();
+                            }
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            cancel[0] = true;
+                            setValue(false);
+                        }
+                    });
+
+                    alert.show();
+                }else {
+                    if (onCheckChangeListener != null) {
+                        onCheckChangeListener.onChangeValueTrue();
+                    }
                 }
             } else {
                 if (onCheckChangeListener != null) {
                     onCheckChangeListener.onChangeValueFalse();
                 }
+            }
+            if (!cancel[0]){
+                setFastPolling();
             }
         }
     };

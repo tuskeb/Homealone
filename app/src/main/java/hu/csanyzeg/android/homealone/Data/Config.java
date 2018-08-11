@@ -13,9 +13,8 @@ public class Config implements Serializable {
     public static String version = null;
     public static Integer polling = 5;
     public static String map = null;
-    public static String gpsn = null;
-    public static String gpse = null;
-    public static Integer gpsdistance = null;
+    public static Double gpsLatitude = null;
+    public static Double gpsLongitude = null;
     public static String gpscomment = null;
 
     public String id = null;//
@@ -39,6 +38,7 @@ public class Config implements Serializable {
     public Double alarmMaxValue = null;//alarm
     public String alarmSwitch = null;//alarm
     public String alarmText = "";//alarm
+    public boolean alarmWrite = true;
     public String alarmComment = null;//alarm
     public String alarmComment2 = null;//alarm
     public Integer precision = 0;
@@ -50,6 +50,7 @@ public class Config implements Serializable {
     public String comment = null;
     public Integer sensibilitypercent = 1;
     public String sensibilitycomment = null;
+    public Double distance = null;
 
     public boolean isSwitch() {
         return min == null || max == null;

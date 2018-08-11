@@ -85,13 +85,10 @@ public abstract class ParseConfigXML {
                                         case "#text":
                                             break;
                                         case "N":
-                                            Config.gpsn = gpstxt;
+                                            Config.gpsLatitude = Double.parseDouble(gpstxt);
                                             break;
                                         case "E":
-                                            Config.gpse = gpstxt;
-                                            break;
-                                        case "distance":
-                                            Config.gpsdistance = Integer.parseInt(gpstxt);
+                                            Config.gpsLongitude = Double.parseDouble(gpstxt);
                                             break;
                                     }
                                 }

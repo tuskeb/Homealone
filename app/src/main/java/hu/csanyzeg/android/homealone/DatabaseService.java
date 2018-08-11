@@ -2,7 +2,12 @@ package hu.csanyzeg.android.homealone;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -25,6 +30,7 @@ public class DatabaseService extends IntentService {
     public static final int BR_DATA_UPDATE = 1;
     public static final int BR_CONFIG_UPDATE = 2;
     public static final int BR_ALARM = 3;
+    public static final int BR_LOCATION_CHANGE = 3;
     public static final String BR_MESSAGE = "BR_MESSAGE";
     public static final String BR_OBJECT_HASH = "BR_OBJECT_HASH";
     public static final String BR_DATA_ID = "BR_DATA_ID";
@@ -36,7 +42,16 @@ public class DatabaseService extends IntentService {
     private final HashMap<String, Data> dataHashMap = new HashMap<>();
     private ArrayList<Config> configs;
     private final IBinder mBinder = new MyBinder();
+
+
     private String lastNotificationString = "";
+    private LocationManager locationManager;
+    private String locationProvider;
+    private Location locationLastLocation;
+    private Location locationHome;
+    private LocationListener locationListener;
+
+
 
     //private ArrayList<Config> configs = null;
     //public static final String CONFIGS = "configs";
@@ -44,6 +59,7 @@ public class DatabaseService extends IntentService {
 
     public DatabaseService() {
         super(logString);
+
         //super();
     }
 
@@ -74,6 +90,12 @@ public class DatabaseService extends IntentService {
     private void generateConfigUpdateNotification(){
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(BR_MESSAGE, BR_CONFIG_UPDATE);
+        sendBroadcast(intent);
+    }
+
+    private void generateLocationChangeNotification(){
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(BR_MESSAGE, BR_LOCATION_CHANGE);
         sendBroadcast(intent);
     }
 
@@ -113,6 +135,10 @@ public class DatabaseService extends IntentService {
                 //System.out.println(dataHashMap.size());
                 //generateAlarmNotification();
                 StringBuilder stringBuilder = new StringBuilder();
+                if (!isLocationEnabled()){
+                    stringBuilder.append("A helyadatok nem hozzáférhetők!");
+                    stringBuilder.append("\n");
+                }
                 for(Data d : dataHashMap.values()) {
                     if (d.isAlarm()) {
                         stringBuilder.append(d.getAlarmText());
@@ -220,10 +246,60 @@ public class DatabaseService extends IntentService {
         }
 
         generateConfigUpdateNotification();
+
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        locationProvider = locationManager.getBestProvider(criteria, false);
+        locationManager.requestLocationUpdates(locationProvider, 400, 1, locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(Location location) {
+                locationLastLocation = location;
+                Data.GPSDistanceInMeter = getDistanceFromHomeInMeters();
+
+                System.out.println("Location changed");
+                System.out.println(" New Longitude: " + location.getLongitude());
+                System.out.println(" New Latitude: " + location.getLatitude());
+                System.out.println(" Config Longitude: " + Config.gpsLongitude);
+                System.out.println(" Config Latitude: " + Config.gpsLatitude);
+                System.out.println(" Distance: " + String.format("%.2f km", location.distanceTo(locationHome) /1000));
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+                System.out.println("Enabled new provider " + locationProvider);
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+                System.out.println("Disabled provider " + locationProvider);
+            }
+        });
+
+        locationLastLocation = locationManager.getLastKnownLocation(locationProvider);
+        locationHome = new Location(locationProvider);
+        locationHome.setLatitude(Config.gpsLatitude);
+        locationHome.setLongitude(Config.gpsLongitude);
+
+
+        // Initialize the location fields
+        if (locationLastLocation != null) {
+            System.out.println("Provider " + locationProvider + " has been selected.");
+            locationListener.onLocationChanged(locationLastLocation);
+        } else {
+            System.out.println("Location not available");
+        }
     }
 
     @Override
     public void onDestroy() {
+        locationManager.removeUpdates(locationListener);
         super.onDestroy();
     }
 
@@ -239,5 +315,17 @@ public class DatabaseService extends IntentService {
 
             }
         }
+    }
+
+    public boolean isLocationEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public float getDistanceFromHomeInMeters(){
+        return locationLastLocation.distanceTo(locationHome);
+    }
+
+    public Location getLocationLastLocation() {
+        return locationLastLocation;
     }
 }

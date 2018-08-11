@@ -13,6 +13,7 @@ import java.util.Random;
  */
 
 abstract public class Data<T> {
+    public static double GPSDistanceInMeter = 0;
     public static final long NO_UPDATE_NEED = -1;
 
     protected Config config;
