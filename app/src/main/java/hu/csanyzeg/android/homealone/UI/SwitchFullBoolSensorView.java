@@ -63,11 +63,12 @@ public class SwitchFullBoolSensorView extends FullBoolSensorView implements Swit
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
 
                     alert.setTitle(getConfig().display);
-                    alert.setMessage("A légvonalban mért távolság otthonról nagyobb, mint " + getConfig().distance + " m. Folytatja a műveletet?");
+                    alert.setMessage("A légvonalban mért távolság otthonról nagyobb, mint " + String.format("%.0f", getConfig().distance) + " m. Folytatja a műveletet?");
 
                     alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             cancel[0] = false;
+                            setValue(true);
                             if (onCheckChangeListener != null) {
                                 onCheckChangeListener.onChangeValueTrue();
                             }

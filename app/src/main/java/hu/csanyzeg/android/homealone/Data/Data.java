@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
@@ -118,7 +119,33 @@ abstract public class Data<T> {
             }
         }
     }
+/*
+    protected class XMLAsyncTask extends AsyncTask<String, Integer, Integer> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (onDataUpdateListener != null) {
+                onDataUpdateListener.onBeginUpdate(Data.this);
+            }
+        }
 
+        @Override
+        protected Integer doInBackground(String... strings) {
+            NamedArrayList<Entry<T>> entries = getDataFromXML(strings[0]);
+            synchronized (graphEntries) {
+                graphEntries = entries;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            if (onDataUpdateListener != null) {
+                onDataUpdateListener.onEndUpdate(Data.this);
+            }
+        }
+    }
 
     protected class MySQLAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         @Override
@@ -145,21 +172,32 @@ abstract public class Data<T> {
             }
         }
     }
+*/
 
 
-
-    public void fetchDataFromRandom() {
+    protected void fetchDataFromRandom() {
         RandomAsyncTask task = new RandomAsyncTask();
         task.execute(1);
     }
-
-    public void fetchDataFromMySQL() {
-        RandomAsyncTask task = new RandomAsyncTask();
+/*
+    protected void fetchDataFromMySQL() {
+        MySQLAsyncTask task = new MySQLAsyncTask();
         task.execute(1);
     }
 
-    abstract protected NamedArrayList<Entry<T>> getDataFromMySQL();
+    protected void fetchDataFromXML(String xml) {
+        XMLAsyncTask task = new XMLAsyncTask();
+        task.execute(xml);
+    }
+*/
+    protected void fetchDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
+        getDataFromSensorRecords(sensorRecords);
+    }
+
+    //abstract protected NamedArrayList<Entry<T>> getDataFromMySQL();
     abstract protected NamedArrayList<Entry<T>> getDataFromRandom();
+    //abstract protected NamedArrayList<Entry<T>> getDataFromXML(String xml);
+    abstract protected void getDataFromSensorRecords(ArrayList<SensorRecord>  sensorRecords);
 
     abstract public String getAlarmText();
     abstract public boolean isAlarm();
@@ -168,6 +206,7 @@ abstract public class Data<T> {
 
     public Data(Config config) {
         this.config = config;
+        graphEntries.setName(config.display);
     }
 
     synchronized
@@ -203,16 +242,85 @@ abstract public class Data<T> {
         return lastUpdateDate;
     }
 
+    public Date getLastUpdateFromDate() {
+        return lastUpdateFromDate;
+    }
+
+    public Date getLastUpdateToDate() {
+        return lastUpdateToDate;
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    protected Date lastUpdateFromDate;
+    protected Date lastUpdateToDate;
+    protected Date minDate;
+    protected Date maxDate;
+
+    synchronized
+    private void updateUpdateDates(){
+        lastUpdateDate = Calendar.getInstance().getTime();
+        lastUpdateFromDate = getFromDate();
+        lastUpdateToDate = getToDate();
+
+        NamedArrayList<Entry<T>> a = new NamedArrayList<>();
+        long lufd = lastUpdateFromDate.getTime();
+        for (Entry<T> e : graphEntries)  {
+            if (e.date.getTime()<lufd){
+                a.add(e);
+            }
+        }
+        for (Entry<T> e : a)  {
+            graphEntries.remove(e);
+        }
+
+        try {
+            minDate = Collections.min(graphEntries).date;
+        }
+        catch (NoSuchElementException e){
+            minDate = null;
+        }
+        try {
+            maxDate = Collections.max(graphEntries).date;
+        }catch (NoSuchElementException e) {
+            maxDate = null;
+        }
+    }
+/*
     synchronized
     public void updateFromMysql(){
         fetchDataFromMySQL();
-        lastUpdateDate = Calendar.getInstance().getTime();
+        updateUpdateDates();
     }
 
     synchronized
+    public void updateFromXML(String xml){
+        fetchDataFromXML(xml);
+        updateUpdateDates();
+    }
+*/
+    synchronized
     public void updateFromRandom(){
         fetchDataFromRandom();
-        lastUpdateDate = Calendar.getInstance().getTime();
+        updateUpdateDates();
+    }
+
+    synchronized
+    public void updateFromSensorRecords(ArrayList<SensorRecord> sensorRecords){
+        if (onDataUpdateListener != null) {
+            onDataUpdateListener.onBeginUpdate(Data.this);
+        }
+        fetchDataFromSensorRecords(sensorRecords);
+        updateUpdateDates();
+        if (onDataUpdateListener != null) {
+            onDataUpdateListener.onEndUpdate(Data.this);
+        }
     }
 
     @Override

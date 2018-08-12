@@ -11,7 +11,8 @@ public class Config implements Serializable {
 
     public static String name = "Config";
     public static String version = null;
-    public static Integer polling = 5;
+    public static Integer polling = 10;
+    public static Integer dataStoreInterval = 1200; //Mennyi adatot tároljon a grafikonokhoz. Másodpercben megadva.
     public static String map = null;
     public static Double gpsLatitude = null;
     public static Double gpsLongitude = null;
@@ -66,6 +67,10 @@ public class Config implements Serializable {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public static long getDataStoreIntervalMs() {
+        return (long)dataStoreInterval * 1000l;
     }
 
     public AlarmEvent getAlarmEvent(){

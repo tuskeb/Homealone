@@ -103,7 +103,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
             public void onStopTrackingTouch(SeekBar seekBar) {
                 setTimeInterval(seekBar.getProgress());
                 for (NumberData n : numberDataArrayList) {
-                    n.fetchDataFromRandom();
+                    n.updateFromRandom();
                 }
             }
         });
@@ -184,7 +184,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
         }
         //System.out.println(numberData.getGraphEntries().size());
         for (NumberData n : numberDataArrayList) {
-            n.fetchDataFromRandom();
+            n.updateFromRandom();
         }
 
     }
