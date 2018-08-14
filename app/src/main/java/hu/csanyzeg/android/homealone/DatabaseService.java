@@ -6,7 +6,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,16 +18,13 @@ import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Data.OnDataUpdateListener;
 import hu.csanyzeg.android.homealone.Data.SensorRecord;
-import hu.csanyzeg.android.homealone.Utils.HttpMapUtil;
+import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 import hu.csanyzeg.android.homealone.Utils.NotificationHelper;
 import hu.csanyzeg.android.homealone.Utils.ParseConfigINI;
-import hu.csanyzeg.android.homealone.Utils.ParseDataXML;
+import hu.csanyzeg.android.homealone.Utils.ParseCurrentDataXML;
+import hu.csanyzeg.android.homealone.Utils.ParseHistoryDataXML;
 
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,6 +38,8 @@ public class DatabaseService extends IntentService {
     public static final int BR_CONFIG_UPDATE = 2;
     public static final int BR_ALARM = 3;
     public static final int BR_LOCATION_CHANGE = 3;
+    public static final int BR_DOWNLOAD_FAILED = 4;
+    public static final int BR_DOWNLOAD_COMPLETE = 5;
     public static final String BR_MESSAGE = "BR_MESSAGE";
     public static final String BR_OBJECT_HASH = "BR_OBJECT_HASH";
     public static final String BR_DATA_ID = "BR_DATA_ID";
@@ -54,9 +52,6 @@ public class DatabaseService extends IntentService {
     private ArrayList<Config> configs;
     private final IBinder mBinder = new MyBinder();
 
-    private Date startDataTime;
-    private Date stopDataTime;
-
 
     private String lastNotificationString = "";
     private LocationManager locationManager;
@@ -65,8 +60,14 @@ public class DatabaseService extends IntentService {
     private Location locationHome;
     private LocationListener locationListener;
 
+    private Date rpiLastCurrentDataDate;
+    private Date androidLastCurrentDataDate;
+
     private String serverURL = "http://zwl.strangled.net:9002";
 
+    public String getServerURL() {
+        return serverURL;
+    }
 
     //private ArrayList<Config> configs = null;
     //public static final String CONFIGS = "configs";
@@ -76,6 +77,20 @@ public class DatabaseService extends IntentService {
         super(logString);
 
         //super();
+    }
+
+
+    synchronized
+    public Date getRpiCurrentDate() {
+        if (rpiLastCurrentDataDate == null){
+            return null;
+        }
+        return new Date(Calendar.getInstance().getTime().getTime() - getTimeDiffRpiAndroid());
+    }
+
+    public long getTimeDiffRpiAndroid(){
+        if (rpiLastCurrentDataDate == null || androidLastCurrentDataDate == null) return 0;
+        return  androidLastCurrentDataDate.getTime() - rpiLastCurrentDataDate.getTime();
     }
 
     public ArrayList<Config> getConfigs() {
@@ -108,6 +123,19 @@ public class DatabaseService extends IntentService {
         sendBroadcast(intent);
     }
 
+
+    private void generateDownloadCompleteNotification() {
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(BR_MESSAGE, BR_DOWNLOAD_COMPLETE);
+        sendBroadcast(intent);
+    }
+
+    private void generateDownloadFailedNotification() {
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(BR_MESSAGE, BR_DOWNLOAD_FAILED);
+        sendBroadcast(intent);
+    }
+
     private void generateLocationChangeNotification() {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(BR_MESSAGE, BR_LOCATION_CHANGE);
@@ -115,32 +143,9 @@ public class DatabaseService extends IntentService {
     }
 
     public static final int JOB_ID = 0x01;
-/*
-    public static void enqueueWork(Context context, Intent work) {
-        System.out.println("5555555555555555555555555555555");
-        enqueueWork(context, DatabaseService.class, JOB_ID, work);
-        System.out.println("44444444444444444444444444444444444444444");
-    }
-
-    @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        System.out.println("33333333333333333333333333333333333333333333");
-        while (true) {
-            downloadData();
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println(dataHashMap.size());
-            generateAlarmNotification();
-        }
-    }
-*/
-
     private boolean refreshInProgress = false;
 
-
+/*
     private class HttpAsyncTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -172,7 +177,7 @@ public class DatabaseService extends IntentService {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            ArrayList<SensorRecord> sensorRecords = ParseDataXML.parse(s);
+            ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(s);
             //System.out.println(sensorRecords);
             for (Data d : dataHashMap.values()) {
                 //d.updateFromRandom();
@@ -187,7 +192,7 @@ public class DatabaseService extends IntentService {
             HttpURLConnection urlConnection = null;
             StringBuilder stringBuilder = new StringBuilder();
             HashMap<String, String> get = new HashMap<>();
-            SimpleDateFormat simpleDateFormat = ParseDataXML.getDateParser();
+            SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
             get.put("format", "xml");
             get.put("start", simpleDateFormat.format(startDataTime));
             get.put("stop", simpleDateFormat.format(stopDataTime));
@@ -236,28 +241,139 @@ public class DatabaseService extends IntentService {
         }
     }
 
-
+*/
     private boolean isRefreshNeed() {
         for (Data d : dataHashMap.values()) {
-            if (d.isRefreshNeed()) {
+            if (d.isRefreshNeed(getRpiCurrentDate())) {
                 return true;
             }
         }
         return false;
     }
 
+
+    private boolean forceDownloadAllData = true;
+    public void setForceDownloadAllData(){
+        forceDownloadAllData = true;
+    }
+
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         while (true) {
-            if (!refreshInProgress && isRefreshNeed()) {
-                HttpAsyncTask httpAsyncTask = new HttpAsyncTask();
-                httpAsyncTask.execute(serverURL);
+            if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
+                System.out.println("Refresh need");
+                refreshInProgress = true;
+
+
+                //Régebbi adatok letöltése
+                if (getRpiCurrentDate()!= null) {
+                    Date startDataTime;
+                    Date stopDataTime;
+                    stopDataTime = Collections.max(dataHashMap.values(), new Comparator<Data>() {
+                        @Override
+                        public int compare(Data data, Data t1) {
+                            return data.getToDate().compareTo(t1.getToDate());
+                        }
+                    }).getToDate();
+                    if (!forceDownloadAllData) {
+
+                        long sdt = Long.MAX_VALUE;
+                        for (Data data : dataHashMap.values()) {
+                            if (data.getLastUpdateDate() == null) {
+                                if (data.getFromDate().getTime() < sdt) {
+                                    sdt = data.getFromDate().getTime();
+                                }
+                            } else {
+                                if (data.getLastUpdateDate().getTime() < sdt) {
+                                    sdt = data.getLastUpdateDate().getTime();
+                                }
+                            }
+                        }
+                        startDataTime = new Date(sdt);
+                    }else{
+                        System.out.println("Force update all data  --------");
+                        startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
+                            @Override
+                            public int compare(Data data, Data t1) {
+                                //System.out.println(data.getFromDate());
+                                return data.getFromDate().compareTo(t1.getFromDate());
+                            }
+                        }).getFromDate();
+                    }
+
+                    System.out.println("Download startDataTime " + startDataTime);
+                    System.out.println("Download stopDataTime " + stopDataTime);
+                    SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
+
+                    if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
+                        forceDownloadAllData = false;
+                        HashMap<String, String> get = new HashMap<>();
+                        get.put("format", "xml");
+                        get.put("start", simpleDateFormat.format(startDataTime));
+                        get.put("stop", simpleDateFormat.format(stopDataTime));
+                        new HttpDownloadUtil() {
+                            @Override
+                            public void onDownloadStart() {
+                                System.out.println("Start downloading history...");
+                            }
+
+                            @Override
+                            public void onDownloadComplete(StringBuilder stringBuilder) {
+                                if (stringBuilder == null) {
+                                    generateDownloadFailedNotification();
+                                    return;
+                                }
+                                ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
+                                //System.out.println(sensorRecords);
+                                for (Data d : dataHashMap.values()) {
+                                    //d.updateFromRandom();
+                                    d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                                }
+                                //generateDownloadCompleteNotification();
+                            }
+                        }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+                    }
+                }
+
+                //Aktuális adatok letöltése
+                HashMap<String, String> get = new HashMap<>();
+                get.put("format", "xml");
+                new HttpDownloadUtil() {
+                    @Override
+                    public void onDownloadStart() {
+                        System.out.println("Start downloading current data...");
+                        androidLastCurrentDataDate = Calendar.getInstance().getTime();
+                    }
+
+                    @Override
+                    public void onDownloadComplete(StringBuilder stringBuilder) {
+                        refreshInProgress = false;
+
+                        if (stringBuilder == null) {
+                            generateDownloadFailedNotification();
+                            return;
+                        }
+                        ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
+
+                        if (sensorRecords.size()>0){
+                            rpiLastCurrentDataDate = new Date (sensorRecords.get(0).ts.getTime() - getDownloadTimeMs() / 2);
+                        }
+
+                        for (Data d : dataHashMap.values()) {
+                            d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                        }
+
+                        getDownloadTimeMs();
+                        generateDownloadCompleteNotification();
+
+
+                    }
+                }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            System.out.println(refreshInProgress);
+            System.out.println("RPI: " + getRpiCurrentDate());
+            System.out.println("And: " + Calendar.getInstance().getTime());
             //System.out.println(dataHashMap.size());
             //generateAlarmNotification();
             StringBuilder stringBuilder = new StringBuilder();
@@ -274,6 +390,12 @@ public class DatabaseService extends IntentService {
             }
             if (stringBuilder.length() > 0) {
                 generateAlarmNotification(stringBuilder.toString());
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -330,24 +452,26 @@ public class DatabaseService extends IntentService {
                     dataHashMap.put(c.id, new BoolData(c) {
                         @Override
                         public Date getFromDate() {
-                            return new Date(Calendar.getInstance().getTime().getTime() - Config.getDataStoreIntervalMs());
+                            if (getRpiCurrentDate()== null) return null;
+                            return new Date(getRpiCurrentDate().getTime() - Config.getDataStoreIntervalMs());
                         }
 
                         @Override
                         public Date getToDate() {
-                            return Calendar.getInstance().getTime();
+                            return getRpiCurrentDate();
                         }
                     });
                 } else {
                     dataHashMap.put(c.id, new NumberData(c) {
                         @Override
                         public Date getFromDate() {
-                            return new Date(Calendar.getInstance().getTime().getTime() - Config.getDataStoreIntervalMs());
+                            if (getRpiCurrentDate()== null) return null;
+                            return new Date(getRpiCurrentDate().getTime() - Config.getDataStoreIntervalMs());
                         }
 
                         @Override
                         public Date getToDate() {
-                            return Calendar.getInstance().getTime();
+                            return getRpiCurrentDate();
                         }
                     });
                 }
@@ -383,7 +507,7 @@ public class DatabaseService extends IntentService {
             public void onLocationChanged(Location location) {
                 locationLastLocation = location;
                 Data.GPSDistanceInMeter = getDistanceFromHomeInMeters();
-
+                generateLocationChangeNotification();
                 System.out.println("Location changed");
                 System.out.println(" New Longitude: " + location.getLongitude());
                 System.out.println(" New Latitude: " + location.getLatitude());

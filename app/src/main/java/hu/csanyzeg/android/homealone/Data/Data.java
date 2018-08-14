@@ -225,16 +225,16 @@ abstract public class Data<T> {
     }
 
     synchronized
-    public boolean isRefreshNeed(){
+    public boolean isRefreshNeed(Date now){
         if (fastPollingRemainCount>0){
-            if (Calendar.getInstance().getTime().getTime()-fastPollingIntervalMs > lastUpdateDate.getTime()){
+            if (now.getTime()-fastPollingIntervalMs > lastUpdateDate.getTime()){
                 //System.out.println("FastPolling");
                 fastPollingRemainCount--;
                 return true;
             }
         }
         //System.out.println(fastPollingRemainCount);
-        return lastUpdateDate == null || Calendar.getInstance().getTime().getTime()-refreshIntervalMs > lastUpdateDate.getTime();
+        return lastUpdateDate == null || now.getTime()-refreshIntervalMs > lastUpdateDate.getTime();
     }
 
     synchronized
@@ -264,21 +264,55 @@ abstract public class Data<T> {
     protected Date maxDate;
 
     synchronized
-    private void updateUpdateDates(){
-        lastUpdateDate = Calendar.getInstance().getTime();
+    private void updateUpdateDates(Date now){
+        lastUpdateDate = now;
         lastUpdateFromDate = getFromDate();
         lastUpdateToDate = getToDate();
 
+        // Elavult adatok törlése
         NamedArrayList<Entry<T>> a = new NamedArrayList<>();
         long lufd = lastUpdateFromDate.getTime();
+        Entry<T> lastRemoved = null;
         for (Entry<T> e : graphEntries)  {
             if (e.date.getTime()<lufd){
                 a.add(e);
             }
         }
+
         for (Entry<T> e : a)  {
             graphEntries.remove(e);
+            lastRemoved = e;
         }
+
+
+        if (lastRemoved!= null) {
+            lastRemoved.date = getLastUpdateFromDate();
+        }else{
+            if (graphEntries.size()>=1){
+                Entry<T> next = graphEntries.get(0);
+                lastRemoved =  new Entry<T>(next.value, getLastUpdateFromDate(), next.color);
+            }
+        }
+
+        if (lastRemoved!=null){
+            graphEntries.add(lastRemoved);
+            Collections.sort(graphEntries);
+        }
+
+        //Ismétlődések eltávolítása
+        NamedArrayList<Entry<T>> b = new NamedArrayList<>();
+        Entry<T> prev = null;
+        for (Entry<T> e : graphEntries)  {
+            if (prev != null && e.date.getTime()==prev.date.getTime()){
+                b.add(e);
+            }
+            prev = e;
+        }
+
+        for (Entry<T> e : b)  {
+            graphEntries.remove(e);
+        }
+
 
         try {
             minDate = Collections.min(graphEntries).date;
@@ -306,18 +340,22 @@ abstract public class Data<T> {
     }
 */
     synchronized
-    public void updateFromRandom(){
+    public void updateFromRandom(Date now){
         fetchDataFromRandom();
-        updateUpdateDates();
+        updateUpdateDates(now);
     }
 
     synchronized
-    public void updateFromSensorRecords(ArrayList<SensorRecord> sensorRecords){
+    public void updateFromSensorRecords(ArrayList<SensorRecord> sensorRecords, Date now) {
         if (onDataUpdateListener != null) {
             onDataUpdateListener.onBeginUpdate(Data.this);
         }
+
         fetchDataFromSensorRecords(sensorRecords);
-        updateUpdateDates();
+        if (getFromDate() != null && getToDate() != null)
+        {
+            updateUpdateDates(now);
+        }
         if (onDataUpdateListener != null) {
             onDataUpdateListener.onEndUpdate(Data.this);
         }
@@ -349,9 +387,10 @@ abstract public class Data<T> {
 
     synchronized
     public void setFastPollingRemainCount(int fastPollingRemainCount) {
-        if (this.fastPollingRemainCount==0 && fastPollingRemainCount>0){
-            lastUpdateDate = Calendar.getInstance().getTime();
-        }
+        /*if (this.fastPollingRemainCount==0 && fastPollingRemainCount>0){
+            lastUpdateDate = now;
+        }*/
+        System.out.println(" Set Fast polling !!!!!!!!!!!!!!!");
         this.fastPollingRemainCount = fastPollingRemainCount;
     }
 

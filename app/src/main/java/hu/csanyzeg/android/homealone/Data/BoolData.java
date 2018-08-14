@@ -38,11 +38,19 @@ public abstract class BoolData extends Data<Boolean> {
 
     @Override
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
-        long from = getFromDate().getTime();
-        long to = getToDate().getTime();
-        for(SensorRecord s : sensorRecords){
-            if (s.field.equals(config.id) && from<=s.ts.getTime() && to>=s.ts.getTime()) {
-                graphEntries.add(new Entry<Boolean>(s.value!=0, s.ts));
+        if (getFromDate() == null || getToDate() == null){
+            for (SensorRecord s : sensorRecords) {
+                if (s.field.equals(config.id)) {
+                    graphEntries.add(new Entry<Boolean>(s.value != 0, s.ts));
+                }
+            }
+        }else {
+            long from = getFromDate().getTime();
+            long to = getToDate().getTime();
+            for (SensorRecord s : sensorRecords) {
+                if (s.field.equals(config.id) && from <= s.ts.getTime() && to >= s.ts.getTime()) {
+                    graphEntries.add(new Entry<Boolean>(s.value != 0, s.ts));
+                }
             }
         }
         System.out.println(graphEntries.size() + " "  + config.display);

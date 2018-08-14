@@ -12,6 +12,16 @@ public class SensorRecord {
     public Double value;
     public Date ts;
 
+    public SensorRecord() {
+    }
+
+    public SensorRecord(Integer id, String field, Double value, Date ts) {
+        this.id = id;
+        this.field = field;
+        this.value = value;
+        this.ts = ts;
+    }
+
     @Override
     public String toString() {
         return "SensorRecord{" +

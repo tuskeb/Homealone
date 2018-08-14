@@ -76,13 +76,15 @@ public class NumberGraphView extends GraphView<Double>{
             p.setAntiAlias(true);
             for (int i = 0; i < entries.size() - 1; i++) {
                 //p.setStrokeWidth(i / 2 + 1);
-                p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h / 80.0 + h / 150));
-                p.setColor(entries.get(i).color + (((int) (((double) i / (double) entries.size()) * 100 + 50)) << 24));
-                int x1 = (int) ((double) (entries.get(i).date.getTime() - timeMin) * pxms);
-                int y1 = h - (int) (entries.get(i).value * pxunit) + (int) (this.min * pxunit);
-                int x2 = (int) ((double) (entries.get(i + 1).date.getTime() - timeMin) * pxms);
-                int y2 = h - (int) (entries.get(i + 1).value * pxunit) + (int) (this.min * pxunit);
-                canvas.drawLine(x1, y1, x2, y2, p);
+                //if (entries.get(i).value != null && entries.get(i).value != null) {
+                    p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h / 80.0 + h / 150));
+                    p.setColor(entries.get(i).color + (((int) (((double) i / (double) entries.size()) * 100 + 50)) << 24));
+                    int x1 = (int) ((double) (entries.get(i).date.getTime() - timeMin) * pxms);
+                    int y1 = h - (int) (entries.get(i).value * pxunit) + (int) (this.min * pxunit);
+                    int x2 = (int) ((double) (entries.get(i + 1).date.getTime() - timeMin) * pxms);
+                    int y2 = h - (int) (entries.get(i + 1).value * pxunit) + (int) (this.min * pxunit);
+                    canvas.drawLine(x1, y1, x2, y2, p);
+                //}
             }
             Entry<Double> min = Collections.min(entries, new Comparator<Entry<Double>>() {
                 @Override

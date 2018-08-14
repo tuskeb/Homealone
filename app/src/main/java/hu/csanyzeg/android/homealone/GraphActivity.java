@@ -103,7 +103,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
             public void onStopTrackingTouch(SeekBar seekBar) {
                 setTimeInterval(seekBar.getProgress());
                 for (NumberData n : numberDataArrayList) {
-                    n.updateFromRandom();
+                    n.updateFromRandom(databaseService.getRpiCurrentDate());
                 }
             }
         });
@@ -126,13 +126,13 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                 final NumberData numberData = new NumberData(cfg) {
                     @Override
                     public Date getFromDate() {
-                        return new Date(Calendar.getInstance().getTime().getTime() - getTimeIntervalMs());
+                        return new Date(databaseService.getRpiCurrentDate().getTime() - getTimeIntervalMs());
 
                     }
 
                     @Override
                     public Date getToDate() {
-                        return new Date(Calendar.getInstance().getTime().getTime());
+                        return new Date(databaseService.getRpiCurrentDate().getTime());
                     }
                 };
 
@@ -184,7 +184,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
         }
         //System.out.println(numberData.getGraphEntries().size());
         for (NumberData n : numberDataArrayList) {
-            n.updateFromRandom();
+            n.updateFromRandom(databaseService.getRpiCurrentDate());
         }
 
     }

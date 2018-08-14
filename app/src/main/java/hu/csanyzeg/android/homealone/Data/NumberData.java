@@ -50,11 +50,27 @@ abstract public class NumberData extends Data<Double> {
 
     @Override
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
-        long from = getFromDate().getTime();
-        long to = getToDate().getTime();
-        for(SensorRecord s : sensorRecords){
-            if (s.field.equals(config.id) && from<=s.ts.getTime() && to>=s.ts.getTime()) {
-                graphEntries.add(new Entry<Double>(s.value, s.ts));
+        if (getFromDate() == null || getToDate() == null){
+            for (SensorRecord s : sensorRecords) {
+                if (s.field.equals(config.id)) {
+                    Entry<Double> e;
+                    graphEntries.add(e = new Entry<Double>(s.value, s.ts));
+                    /*if (s.value>=config.min && s.value<=config.max) {
+                        e.value = null;
+                    }*/
+                }
+            }
+        }else {
+            long from = getFromDate().getTime();
+            long to = getToDate().getTime();
+            for (SensorRecord s : sensorRecords) {
+                if (s.field.equals(config.id) && from <= s.ts.getTime() && to >= s.ts.getTime()) {
+                    Entry<Double> e;
+                    graphEntries.add(e = new Entry<Double>(s.value, s.ts));
+                    /*if (s.value>=config.min && s.value<=config.max) {
+                        e.value = null;
+                    }*/
+                }
             }
         }
         System.out.println(graphEntries.size() + " "  + config.display);

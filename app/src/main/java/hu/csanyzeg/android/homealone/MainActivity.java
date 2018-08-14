@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         for (Config config : configs) {
             if (config.isEnabled()) {
                 if (layout.findViewWithTag(config.id)==null) {
-                    View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id);
+                    View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id, databaseService);
                     if (sensorView != null) {
                         sensors.add((Sensor) sensorView);
                         layout.addView(sensorView);
