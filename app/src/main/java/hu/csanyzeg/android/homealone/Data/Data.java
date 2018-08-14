@@ -21,7 +21,7 @@ abstract public class Data<T> {
 
     protected T settingsValue;
     protected int fastPollingRemainCount = 0;
-    protected long fastPollingIntervalMs = 4000;
+    protected long fastPollingIntervalMs = Config.getFastPollingIntervalMs();
 
     protected Date lastUpdateDate = null;
     protected long refreshIntervalMs = 20000;

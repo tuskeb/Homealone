@@ -85,7 +85,7 @@ public class InputFullNumberSensorView extends FullNumberSensorView {
 
     public void setFastPolling() {
         for (NumberData numberData: data.values()) {
-            numberData.setFastPollingRemainCount(2);
+            numberData.setFastPollingRemainCount(Config.fastPollingCount);
         }
     }
 }

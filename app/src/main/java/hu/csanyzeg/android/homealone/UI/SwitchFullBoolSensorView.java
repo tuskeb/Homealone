@@ -137,7 +137,7 @@ public class SwitchFullBoolSensorView extends FullBoolSensorView implements Swit
 
     public void setFastPolling() {
         for (BoolData boolData: data.values()) {
-            boolData.setFastPollingRemainCount(2);
+            boolData.setFastPollingRemainCount(Config.fastPollingCount);
         }
     }
 

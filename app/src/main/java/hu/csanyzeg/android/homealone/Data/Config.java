@@ -12,6 +12,9 @@ public class Config implements Serializable {
     public static String name = "Config";
     public static String version = null;
     public static Integer polling = 10;
+    public static Integer fastPollingCount = 8;
+    public static Double fastPollingInterval = 0.5;
+    public static Double serviceThreadSleepInterval = 0.4;
     public static Integer dataStoreInterval = 1200; //Mennyi adatot tároljon a grafikonokhoz. Másodpercben megadva.
     public static String map = null;
     public static Double gpsLatitude = null;
@@ -71,6 +74,18 @@ public class Config implements Serializable {
 
     public static long getDataStoreIntervalMs() {
         return (long)dataStoreInterval * 1000l;
+    }
+
+    public static Integer getFastPollingCount() {
+        return fastPollingCount;
+    }
+
+    public static long getServiceThreadSleepIntervalMs() {
+        return (long)(serviceThreadSleepInterval * 1000l);
+    }
+
+    public static long getFastPollingIntervalMs() {
+        return (long)(fastPollingInterval * 1000l);
     }
 
     public AlarmEvent getAlarmEvent(){

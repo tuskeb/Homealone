@@ -57,14 +57,14 @@ public class FullSensorViewInflater {
 
                             @Override
                             public void onDownloadComplete(StringBuilder stringBuilder) {
-
+/*
                                 if (stringBuilder == null) {
                                     return;
                                 }
                                 ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
                                 if (sensorRecords.size() > 0) {
                                     data.updateFromSensorRecords(sensorRecords, sensorRecords.get(0).ts);
-                                }
+                                }*/
                             }
                         }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
                     }
@@ -110,14 +110,14 @@ public class FullSensorViewInflater {
 
                                 @Override
                                 public void onDownloadComplete(StringBuilder stringBuilder) {
-
+/*
                                     if (stringBuilder == null) {
                                         return;
                                     }
                                     ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
                                     if (sensorRecords.size() > 0) {
                                         data.updateFromSensorRecords(sensorRecords, sensorRecords.get(0).ts);
-                                    }
+                                    }*/
                                 }
                             }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
                         }
@@ -135,14 +135,14 @@ public class FullSensorViewInflater {
 
                                 @Override
                                 public void onDownloadComplete(StringBuilder stringBuilder) {
-
+/*
                                     if (stringBuilder == null) {
                                         return;
                                     }
                                     ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
                                     if (sensorRecords.size() > 0) {
                                         data.updateFromSensorRecords(sensorRecords, sensorRecords.get(0).ts);
-                                    }
+                                    }*/
                                 }
                             }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
                         }

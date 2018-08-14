@@ -393,7 +393,7 @@ public class DatabaseService extends IntentService {
             }
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(Config.getServiceThreadSleepIntervalMs());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
