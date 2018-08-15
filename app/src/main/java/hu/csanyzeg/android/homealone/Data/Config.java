@@ -56,6 +56,7 @@ public class Config implements Serializable {
     public String sensibilitycomment = null;
     public Double distance = null;
 
+
     public boolean isSwitch() {
         return min == null || max == null;
     }
@@ -81,11 +82,11 @@ public class Config implements Serializable {
     }
 
     public static long getServiceThreadSleepIntervalMs() {
-        return (long)(serviceThreadSleepInterval * 1000l);
+        return (long)(serviceThreadSleepInterval * 1000L);
     }
 
     public static long getFastPollingIntervalMs() {
-        return (long)(fastPollingInterval * 1000l);
+        return (long)(fastPollingInterval * 1000L);
     }
 
     public AlarmEvent getAlarmEvent(){

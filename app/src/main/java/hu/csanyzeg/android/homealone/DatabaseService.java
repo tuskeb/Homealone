@@ -564,7 +564,10 @@ public class DatabaseService extends IntentService {
     }
 
     public float getDistanceFromHomeInMeters() {
-        return locationLastLocation.distanceTo(locationHome);
+        if (locationLastLocation != null) {
+            return locationLastLocation.distanceTo(locationHome);
+        }
+        return 0;
     }
 
     public Location getLocationLastLocation() {
