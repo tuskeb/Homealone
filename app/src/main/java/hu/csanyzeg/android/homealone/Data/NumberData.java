@@ -20,35 +20,8 @@ abstract public class NumberData extends Data<Double> {
         //settingsAlarmMaxValue = config.alarmMaxValue;
     }
 
-/*
     @Override
-    protected NamedArrayList<Entry<Double>> getDataFromMySQL() {
-        throw new UnsupportedOperationException();
-    }
-*/
-
-    @Override
-    protected NamedArrayList<Entry<Double>> getDataFromRandom() {
-        NamedArrayList<Entry<Double>> mentries = new NamedArrayList<>();
-        mentries.setName(config.display);
-        Double v = random.nextFloat() * (config.max - config.min) + config.min;
-        int c = NumberData.this.hashCode() >> 8 + 0xff000000;
-        //int c = random.nextInt(0xffffff) + 0xff000000;
-        long i = getFromDate().getTime();
-        System.out.println("Start random");
-        long it = (getToDate().getTime() - getFromDate().getTime()) / valueCount;
-        while (i + it <= getToDate().getTime()) {
-            v += (random.nextBoolean() ? random.nextFloat() * (config.max - config.min) / 20 : -random.nextFloat() * (config.max - config.min) / 20);
-            //t +=random.nextInt(120000) +1000;
-            i += it;
-            mentries.add(new Entry(v, i, c));
-        }
-        Collections.sort(mentries);
-        System.out.println("End random");
-        return mentries;
-    }
-
-    @Override
+    synchronized
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
         if (getFromDate() == null || getToDate() == null){
             for (SensorRecord s : sensorRecords) {

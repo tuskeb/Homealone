@@ -15,28 +15,8 @@ public abstract class BoolData extends Data<Boolean> {
     protected Boolean settingsAlarmValue = true;
     protected boolean alarm = false;
 
-/*
     @Override
-    protected NamedArrayList<Entry<Boolean>> getDataFromMySQL() {
-        throw new UnsupportedOperationException();
-    }
-*/
-    @Override
-    protected NamedArrayList<Entry<Boolean>> getDataFromRandom() {
-        NamedArrayList<Entry<Boolean>> mentries = new NamedArrayList<>();
-        int c = BoolData.this.hashCode() >> 8 + 0xff000000;
-        long i = getFromDate().getTime();
-        long it = (getToDate().getTime() - getFromDate().getTime()) / valueCount;
-        while (i + it <= getToDate().getTime()) {
-            i += it;
-            mentries.add(new Entry(random.nextBoolean(), i, c));
-        }
-
-        Collections.sort(mentries);
-        return mentries;
-    }
-
-    @Override
+    synchronized
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
         if (getFromDate() == null || getToDate() == null){
             for (SensorRecord s : sensorRecords) {

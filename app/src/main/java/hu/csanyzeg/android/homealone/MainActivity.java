@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.icu.util.Measure;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
@@ -19,13 +21,17 @@ import hu.csanyzeg.android.homealone.UI.FullNumberSensorView;
 import hu.csanyzeg.android.homealone.Utils.FullSensorViewInflater;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection{
     private ViewGroup layout;
+    private ViewGroup layout2;
     private DatabaseService databaseService = null;
     private ArrayList<Sensor> sensors = new ArrayList<>();
+    private TextView rpiTimeTV;
+    private TextView distanceTV;
+    private TextView alarmTV;
 
 
     private BroadcastReceiver databaseBroadcastReceiver = new BroadcastReceiver() {
@@ -53,9 +59,26 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         break;
                     case DatabaseService.BR_LOCATION_CHANGE:
                         if (databaseService != null) {
-                            setTitle(getString(R.string.app_name) + " (" + String.format("%.1f km", databaseService.getDistanceFromHomeInMeters() / 1000f) +")");
+                            Float dt = null;
+                            if ((dt = databaseService.getDistanceFromHomeInMeters()) == null) {
+                                distanceTV.setText(getString(R.string.locationdistance) + String.format("%.1f km", dt / 1000f));
+                            }else{
+                                distanceTV.setText(R.string.locationnotfound);
+                            }
                         }
                         break;
+                    case DatabaseService.BR_ALARM:
+                        if (databaseService != null) {
+                            if (databaseService.getAlarmText()!=null) {
+                                alarmTV.setText(databaseService.getAlarmText());
+                            }else{
+                                alarmTV.setText(R.string.alarmnone);
+                            }
+                        }
+                    break;
+/*                    case DatabaseService.BR_RPI_TIME_UPDATE:
+
+                       break;*/
                 }
             }
         }
@@ -69,9 +92,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
 
         layout = findViewById(R.id.mainLayout);
+        layout2 = findViewById(R.id.mainLayout2);
+        rpiTimeTV = findViewById(R.id.rpiTimeTV);
+        distanceTV = findViewById(R.id.distanceTV);
+        alarmTV = findViewById(R.id.alarmTV);
 
 
-
+        rpiTimeTV.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (databaseService != null){
+                    if (databaseService.getRpiCurrentDate()!= null) {
+                        rpiTimeTV.setText(getString(R.string.hometime) + databaseService.getRpiCurrentDate());
+                    }else{
+                        rpiTimeTV.setText(R.string.hometimenotfound);
+                    }
+                }
+                rpiTimeTV.postDelayed(this,980);
+            }
+        }, 980);
 
         Intent i= new Intent(getApplicationContext(), DatabaseService.class);
         startService(i);
@@ -88,7 +127,22 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id, databaseService);
                     if (sensorView != null) {
                         sensors.add((Sensor) sensorView);
-                        layout.addView(sensorView);
+                        /*if (layout2!=null && sensors.size()%2==0){
+                            layout2.addView(sensorView);
+                        }else{
+                            layout.addView(sensorView);
+                        }*/
+                        if (layout2!=null){
+                            if (((Sensor) sensorView).getConfig().isSwitch()){
+                                layout2.addView(sensorView);
+                            }else{
+                                layout.addView(sensorView);
+                            }
+                        }else{
+                            layout.addView(sensorView);
+                        }
+                        
+                        System.out.println(layout.getHeight());
                         sensorView.setTag(config.id);
                         ((Sensor) sensorView).updateData();
 

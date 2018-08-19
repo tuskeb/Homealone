@@ -74,12 +74,14 @@ public class NumberGraphView extends GraphView<Double>{
         if (entries.size()>0) {
             Paint p = new Paint();
             p.setAntiAlias(true);
+
             for (int i = 0; i < entries.size() - 1; i++) {
                 //p.setStrokeWidth(i / 2 + 1);
                 //if (entries.get(i).value != null && entries.get(i).value != null) {
-                    p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h / 80.0 + h / 150));
-                    p.setColor(entries.get(i).color + (((int) (((double) i / (double) entries.size()) * 100 + 50)) << 24));
-                    int x1 = (int) ((double) (entries.get(i).date.getTime() - timeMin) * pxms);
+                    //p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h / 80.0 + h / 150));
+                    //p.setColor(entries.get(i).color + (((int) (((double) i / (double) entries.size()) * 100 + 50)) << 24));
+                p.setColor(entries.get(0).color);
+                int x1 = (int) ((double) (entries.get(i).date.getTime() - timeMin) * pxms);
                     int y1 = h - (int) (entries.get(i).value * pxunit) + (int) (this.min * pxunit);
                     int x2 = (int) ((double) (entries.get(i + 1).date.getTime() - timeMin) * pxms);
                     int y2 = h - (int) (entries.get(i + 1).value * pxunit) + (int) (this.min * pxunit);
@@ -114,10 +116,12 @@ public class NumberGraphView extends GraphView<Double>{
 
 
             double sum = 0;
-            for (Entry<Double> e : entries) {
-                sum += e.value;
+            double intv = 0;
+            for (int i = 0; i < entries.size() - 1; i++) {
+                intv+=entries.get(i+1).date.getTime() - entries.get(i).date.getTime();
+                sum += entries.get(i).value * (entries.get(i+1).date.getTime() - entries.get(i).date.getTime());
             }
-            double avg = sum / entries.size();
+            double avg = sum / intv;
 
             p.setTextSize(getFontSize(0));
             p.setColor(current.color);
@@ -135,9 +139,9 @@ public class NumberGraphView extends GraphView<Double>{
 
             p.setTextSize(getFontSize(2));
             v = entries.getName() + ": " + String.format("%." + decimal + "f", current.value) + " " + getUnit();
-            ;
             if (v != null) {
-                x1 = (int) ((double) ((current.date.getTime() - start.date.getTime()) / 2) * pxms) - (int) p.measureText(v) / 2;
+                //x1 = (int) ((double) ((current.date.getTime() - start.date.getTime()) / 2) * pxms) - (int) p.measureText(v) / 2;
+                x1 = (int) ((double) (timeInterval / 2) * pxms) - (int) p.measureText(v) / 2;
                 y1 = h - (int) (avg * pxunit) - (int) padding + (int) (this.min * pxunit);
                 drawStringOnCanvas(v, x1, y1, p, canvas);
             }

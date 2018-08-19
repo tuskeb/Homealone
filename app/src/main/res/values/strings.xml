@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Homealone</string>
+    <string name="locationnotfound">A pozíció nem határozható meg.</string>
+    <string name="alarmnone">Nincs riasztás.</string>
+    <string name="locationdistance">Légvonalban mért távolság otthonról:</string>
+    <string name="hometime">Otthoni idő:</string>
+    <string name="hometimenotfound">Otthoni idő: Nem elérhető.</string>
 </resources>

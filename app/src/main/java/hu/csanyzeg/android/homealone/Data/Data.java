@@ -16,6 +16,8 @@ import java.util.Random;
 abstract public class Data<T> {
     public static double GPSDistanceInMeter = 0;
     public static final long NO_UPDATE_NEED = -1;
+    public static final int[] COLORS = {0xffff00ff, 0xff00ff00, 0xff0000ff, 0xffff0000};
+    private static int colorCounter = 0;
 
     protected Config config;
 
@@ -35,6 +37,7 @@ abstract public class Data<T> {
     protected Data<Boolean> alarmSwitch = null;
 
     protected long valueCount = 50;
+    private int color;
 
 
 
@@ -50,6 +53,18 @@ abstract public class Data<T> {
     public abstract void onDataEndUpdate();
     public abstract void onDataBeginUpdate();
     */
+
+
+    public int getColor() {
+        return color;
+    }
+
+    synchronized
+    private static int getNextColor(){
+        int c = COLORS[colorCounter %COLORS.length];
+        colorCounter ++;
+        return c;
+    }
 
     synchronized
     public Data<Boolean> getAlarmSwitch() {
@@ -93,110 +108,8 @@ abstract public class Data<T> {
         this.settingsValue = settingsValue;
     }
 
-    protected class RandomAsyncTask extends AsyncTask<Integer, Integer, Integer> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onBeginUpdate(Data.this);
-            }
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... integers) {
-            NamedArrayList<Entry<T>> entries = getDataFromRandom();
-            synchronized (graphEntries) {
-                graphEntries = entries;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onEndUpdate(Data.this);
-            }
-        }
-    }
-/*
-    protected class XMLAsyncTask extends AsyncTask<String, Integer, Integer> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onBeginUpdate(Data.this);
-            }
-        }
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-            NamedArrayList<Entry<T>> entries = getDataFromXML(strings[0]);
-            synchronized (graphEntries) {
-                graphEntries = entries;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onEndUpdate(Data.this);
-            }
-        }
-    }
-
-    protected class MySQLAsyncTask extends AsyncTask<Integer, Integer, Integer> {
-        @Override
-        protected Integer doInBackground(Integer... integers) {
-
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onBeginUpdate(Data.this);
-            }
-
-            NamedArrayList<Entry<T>> entries =  getDataFromMySQL();
 
 
-            synchronized (graphEntries) {
-                graphEntries = entries;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-            if (onDataUpdateListener != null) {
-                onDataUpdateListener.onEndUpdate(Data.this);
-            }
-        }
-    }
-*/
-
-
-    protected void fetchDataFromRandom() {
-        RandomAsyncTask task = new RandomAsyncTask();
-        task.execute(1);
-    }
-/*
-    protected void fetchDataFromMySQL() {
-        MySQLAsyncTask task = new MySQLAsyncTask();
-        task.execute(1);
-    }
-
-    protected void fetchDataFromXML(String xml) {
-        XMLAsyncTask task = new XMLAsyncTask();
-        task.execute(xml);
-    }
-*/
-    protected void fetchDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
-        getDataFromSensorRecords(sensorRecords);
-    }
-
-    //abstract protected NamedArrayList<Entry<T>> getDataFromMySQL();
-    abstract protected NamedArrayList<Entry<T>> getDataFromRandom();
-    //abstract protected NamedArrayList<Entry<T>> getDataFromXML(String xml);
     abstract protected void getDataFromSensorRecords(ArrayList<SensorRecord>  sensorRecords);
 
     abstract public String getAlarmText();
@@ -207,6 +120,11 @@ abstract public class Data<T> {
     public Data(Config config) {
         this.config = config;
         graphEntries.setName(config.display);
+        if (config.color==null) {
+            color = getNextColor();
+        }else{
+            color = config.color;
+        }
     }
 
     synchronized
@@ -284,22 +202,22 @@ abstract public class Data<T> {
             lastRemoved = e;
         }
 
-
+/*
         if (lastRemoved!= null) {
-            lastRemoved.date = getLastUpdateFromDate();
+
         }else{
             if (graphEntries.size()>=1){
                 Entry<T> next = graphEntries.get(0);
                 lastRemoved =  new Entry<T>(next.value, getLastUpdateFromDate(), next.color);
             }
         }
-
+*/
         if (lastRemoved!=null){
             graphEntries.add(lastRemoved);
             Collections.sort(graphEntries);
         }
 
-        //Ismétlődések eltávolítása
+        //Idő ismétlődések eltávolítása
         NamedArrayList<Entry<T>> b = new NamedArrayList<>();
         Entry<T> prev = null;
         for (Entry<T> e : graphEntries)  {
@@ -314,6 +232,25 @@ abstract public class Data<T> {
         }
 
 
+        //érték ismétlődések eltávolítása
+        NamedArrayList<Entry<T>> k = new NamedArrayList<>();
+        for(int i = 1; i<graphEntries.size()-1; i++) {
+            if (((Comparable<T>)(graphEntries.get(i).value)).compareTo(graphEntries.get(i-1).value) == 0 && ((Comparable<T>)(graphEntries.get(i).value)).compareTo(graphEntries.get(i+1).value)==0){
+                k.add(graphEntries.get(i));
+                //System.out.println("----------- Remove -------------");
+            }
+        }
+
+        for (Entry<T> e : k)  {
+            graphEntries.remove(e);
+        }
+
+
+        //Színezés
+        for (Entry<T> e : graphEntries)  {
+            e.color = color;
+        }
+
         try {
             minDate = Collections.min(graphEntries).date;
         }
@@ -325,25 +262,9 @@ abstract public class Data<T> {
         }catch (NoSuchElementException e) {
             maxDate = null;
         }
-    }
-/*
-    synchronized
-    public void updateFromMysql(){
-        fetchDataFromMySQL();
-        updateUpdateDates();
+        System.out.println(graphEntries);
     }
 
-    synchronized
-    public void updateFromXML(String xml){
-        fetchDataFromXML(xml);
-        updateUpdateDates();
-    }
-*/
-    synchronized
-    public void updateFromRandom(Date now){
-        fetchDataFromRandom();
-        updateUpdateDates(now);
-    }
 
     synchronized
     public void updateFromSensorRecords(ArrayList<SensorRecord> sensorRecords, Date now) {
@@ -351,7 +272,7 @@ abstract public class Data<T> {
             onDataUpdateListener.onBeginUpdate(Data.this);
         }
 
-        fetchDataFromSensorRecords(sensorRecords);
+        getDataFromSensorRecords(sensorRecords);
         if (getFromDate() != null && getToDate() != null)
         {
             updateUpdateDates(now);

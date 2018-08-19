@@ -22,6 +22,8 @@ import java.util.HashMap;
 
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
+import hu.csanyzeg.android.homealone.Data.Entry;
+import hu.csanyzeg.android.homealone.Data.NamedArrayList;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Data.OnDataUpdateListener;
 import hu.csanyzeg.android.homealone.Data.SensorRecord;
@@ -229,6 +231,8 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                         ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
                         //System.out.println(sensorRecords);
                         n.updateFromSensorRecords(sensorRecords, databaseService.getRpiCurrentDate());
+                        NamedArrayList<Entry> asd = databaseService.getDataHashMap().get(n.getConfig().id).getGraphEntries();
+                        n.getGraphEntries().add((Entry)asd.get(asd.size()-1));
                         //generateDownloadCompleteNotification();
                         if (progressCount==0) {
                             setProgress(false);

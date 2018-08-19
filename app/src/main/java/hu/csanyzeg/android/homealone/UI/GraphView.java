@@ -10,6 +10,7 @@ import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import hu.csanyzeg.android.homealone.Data.Entry;
 import hu.csanyzeg.android.homealone.Data.HorizontalGraphLine;
@@ -32,7 +33,8 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
     protected int w;
     protected int h;
     protected long timeInterval;
-    protected long timeMin;
+    protected long timeMin = Calendar.getInstance().getTimeInMillis() - 365L*12L*24L*60L*60L*1000L;
+    protected long timeMax = Calendar.getInstance().getTimeInMillis();
     protected double pxms;
     protected double pxunit;
     protected Canvas canvas;
@@ -84,8 +86,25 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         }
     }
 
+
+    public long getTimeMin() {
+        return timeMin;
+    }
+
+    public void setTimeMin(long timeMin) {
+        this.timeMin = timeMin;
+    }
+
+    public long getTimeMax() {
+        return timeMax;
+    }
+
+    public void setTimeMax(long timeMax) {
+        this.timeMax = timeMax;
+    }
+
     protected double getPxPerMs(){
-        long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
+        /*long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
         for(ArrayList<Entry<T>> entryArrayList : entryList)
             for (Entry e : entryArrayList) {
                 //System.out.println(e.date.getTime());
@@ -96,9 +115,10 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
                     min = e.date.getTime();
                 }
             }
-
-        timeInterval = max - min;
-        timeMin = min;
+*/
+//        timeInterval = max - min;
+        timeInterval = timeMax - timeMin;
+        //timeMin = min;
         return (double) w / (double) timeInterval;
     };
 

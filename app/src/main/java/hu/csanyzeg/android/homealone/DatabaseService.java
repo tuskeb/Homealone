@@ -32,12 +32,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 public class DatabaseService extends IntentService {
     public static final int BR_DATA_UPDATE = 1;
     public static final int BR_CONFIG_UPDATE = 2;
-    public static final int BR_ALARM = 3;
+    public static final int BR_ALARM = 6;
     public static final int BR_LOCATION_CHANGE = 3;
+    public static final int BR_RPI_TIME_UPDATE = 7;
     public static final int BR_DOWNLOAD_FAILED = 4;
     public static final int BR_DOWNLOAD_COMPLETE = 5;
     public static final String BR_MESSAGE = "BR_MESSAGE";
@@ -79,18 +81,23 @@ public class DatabaseService extends IntentService {
         //super();
     }
 
+    synchronized
+    public void setRpiLastCurrentDataDate(Date rpiLastCurrentDataDate) {
+        this.rpiLastCurrentDataDate = rpiLastCurrentDataDate;
+    }
 
     synchronized
     public Date getRpiCurrentDate() {
-        if (rpiLastCurrentDataDate == null){
+        if (rpiLastCurrentDataDate == null) {
             return null;
         }
         return new Date(Calendar.getInstance().getTime().getTime() - getTimeDiffRpiAndroid());
     }
 
-    public long getTimeDiffRpiAndroid(){
+    synchronized
+    public long getTimeDiffRpiAndroid() {
         if (rpiLastCurrentDataDate == null || androidLastCurrentDataDate == null) return 0;
-        return  androidLastCurrentDataDate.getTime() - rpiLastCurrentDataDate.getTime();
+        return androidLastCurrentDataDate.getTime() - rpiLastCurrentDataDate.getTime();
     }
 
     public ArrayList<Config> getConfigs() {
@@ -124,6 +131,13 @@ public class DatabaseService extends IntentService {
     }
 
 
+    private void generateRpiTimeUpdateNotification() {
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(BR_MESSAGE, BR_RPI_TIME_UPDATE);
+        sendBroadcast(intent);
+    }
+
+
     private void generateDownloadCompleteNotification() {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(BR_MESSAGE, BR_DOWNLOAD_COMPLETE);
@@ -145,103 +159,6 @@ public class DatabaseService extends IntentService {
     public static final int JOB_ID = 0x01;
     private boolean refreshInProgress = false;
 
-/*
-    private class HttpAsyncTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected void onPreExecute() {
-            refreshInProgress = true;
-            super.onPreExecute();
-            stopDataTime = Collections.max(dataHashMap.values(), new Comparator<Data>() {
-                @Override
-                public int compare(Data data, Data t1) {
-                    return data.getToDate().compareTo(t1.getToDate());
-                }
-            }).getToDate();
-            long sdt = Long.MAX_VALUE;
-            for(Data data : dataHashMap.values()){
-                if (data.getLastUpdateDate() == null){
-                    if (data.getFromDate().getTime()<sdt){
-                        sdt = data.getFromDate().getTime();
-                    }
-                } else{
-                    if (data.getLastUpdateDate().getTime()<sdt){
-                        sdt = data.getLastUpdateDate().getTime();
-                    }
-                }
-            }
-            startDataTime = new Date(sdt);
-            System.out.println("Download startDataTime " + startDataTime);
-            System.out.println("Download stopDataTime " + stopDataTime);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(s);
-            //System.out.println(sensorRecords);
-            for (Data d : dataHashMap.values()) {
-                //d.updateFromRandom();
-                d.updateFromSensorRecords(sensorRecords);
-            }
-            refreshInProgress = false;
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            URL url = null;
-            HttpURLConnection urlConnection = null;
-            StringBuilder stringBuilder = new StringBuilder();
-            HashMap<String, String> get = new HashMap<>();
-            SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
-            get.put("format", "xml");
-            get.put("start", simpleDateFormat.format(startDataTime));
-            get.put("stop", simpleDateFormat.format(stopDataTime));
-            try {
-                System.out.println("Connect");
-                url = new URL(strings[0] + "/" + HttpMapUtil.mapToString(get));
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setConnectTimeout(2000);
-                urlConnection.setReadTimeout(2000);
-                urlConnection.setDoOutput(true);
-                urlConnection.setDoInput(true);
-                urlConnection.setRequestMethod("GET");
-
-                OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-                writer.write(HttpMapUtil.mapToString(get));
-                writer.flush();
-
-                System.out.println("Waiting");
-                long start = System.currentTimeMillis();
-
-                InputStreamReader reader = new InputStreamReader(urlConnection.getInputStream());
-                long end = System.currentTimeMillis();
-                System.out.println("Response " + (end - start) + " ms");
-
-                int data;
-                data = reader.read();
-                while (data != -1) {
-                    char current = (char) data;
-                    data = reader.read();
-                    stringBuilder.append(current);
-                }
-                System.out.println("End connection");
-            } catch (Exception e) {
-                if (e.getMessage() == null) {
-                    Log.e("HTTP", Log.getStackTraceString(e));
-                } else {
-                    Log.e("HTTP", e.getMessage());
-                }
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-            //System.out.println(stringBuilder.toString());
-            return stringBuilder.toString();
-        }
-    }
-
-*/
     private boolean isRefreshNeed() {
         for (Data d : dataHashMap.values()) {
             if (d.isRefreshNeed(getRpiCurrentDate())) {
@@ -253,8 +170,262 @@ public class DatabaseService extends IntentService {
 
 
     private boolean forceDownloadAllData = true;
-    public void setForceDownloadAllData(){
+
+    public void setForceDownloadAllData() {
         forceDownloadAllData = true;
+    }
+
+
+    protected void updateFromHTTP() {
+        refreshInProgress = true;
+
+
+        //Régebbi adatok letöltése
+        if (getRpiCurrentDate() != null) {
+            Date startDataTime;
+            Date stopDataTime;
+            stopDataTime = Collections.max(dataHashMap.values(), new Comparator<Data>() {
+                @Override
+                public int compare(Data data, Data t1) {
+                    return data.getToDate().compareTo(t1.getToDate());
+                }
+            }).getToDate();
+            if (!forceDownloadAllData) {
+
+                long sdt = Long.MAX_VALUE;
+                for (Data data : dataHashMap.values()) {
+                    if (data.getLastUpdateDate() == null) {
+                        if (data.getFromDate().getTime() < sdt) {
+                            sdt = data.getFromDate().getTime();
+                        }
+                    } else {
+                        if (data.getLastUpdateDate().getTime() < sdt) {
+                            sdt = data.getLastUpdateDate().getTime();
+                        }
+                    }
+                }
+                startDataTime = new Date(sdt);
+            } else {
+                System.out.println("Force update all data  --------");
+                startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
+                    @Override
+                    public int compare(Data data, Data t1) {
+                        //System.out.println(data.getFromDate());
+                        return data.getFromDate().compareTo(t1.getFromDate());
+                    }
+                }).getFromDate();
+            }
+
+            System.out.println("Download startDataTime " + startDataTime);
+            System.out.println("Download stopDataTime " + stopDataTime);
+            SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
+
+            if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
+                forceDownloadAllData = false;
+                HashMap<String, String> get = new HashMap<>();
+                get.put("format", "xml");
+                get.put("start", simpleDateFormat.format(startDataTime));
+                get.put("stop", simpleDateFormat.format(stopDataTime));
+                new HttpDownloadUtil() {
+                    @Override
+                    public void onDownloadStart() {
+                        System.out.println("Start downloading history...");
+                    }
+
+                    @Override
+                    public void onDownloadComplete(StringBuilder stringBuilder) {
+                        if (stringBuilder == null) {
+                            generateDownloadFailedNotification();
+                            return;
+                        }
+                        ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
+                        //System.out.println(sensorRecords);
+                        for (Data d : dataHashMap.values()) {
+                            //d.updateFromRandom();
+                            d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                        }
+                        //generateDownloadCompleteNotification();
+                    }
+                }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+            }
+        }
+
+        //Aktuális adatok letöltése
+        HashMap<String, String> get = new HashMap<>();
+        get.put("format", "xml");
+        new HttpDownloadUtil() {
+            @Override
+            public void onDownloadStart() {
+                System.out.println("Start downloading current data...");
+                androidLastCurrentDataDate = Calendar.getInstance().getTime();
+            }
+
+            @Override
+            public void onDownloadComplete(StringBuilder stringBuilder) {
+                refreshInProgress = false;
+
+                if (stringBuilder == null) {
+                    generateDownloadFailedNotification();
+                    return;
+                }
+                ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
+
+                if (sensorRecords.size() > 0) {
+                    setRpiLastCurrentDataDate(new Date(sensorRecords.get(0).ts.getTime() - getDownloadTimeMs() / 2));
+                    generateRpiTimeUpdateNotification();
+                }
+
+                for (Data d : dataHashMap.values()) {
+                    d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                }
+
+                getDownloadTimeMs();
+                generateDownloadCompleteNotification();
+
+
+            }
+        }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+
+    }
+
+
+    private static Random random = new Random();
+
+    public SensorRecord randomSensorRecordField(){
+        SensorRecord sensorRecord = new SensorRecord();
+        int s;
+        Config r;
+        Data d;
+        while (!(r = ( d = (Data)(dataHashMap.values().toArray()[random.nextInt(dataHashMap.size())])).getConfig()).isSensor());
+        if (r.isSwitch()){
+            sensorRecord.value = (double)random.nextInt(2);
+        }else{
+            sensorRecord.value = (double)((random.nextInt((int)((r.max - r.min) * 100))) + r.min)/100;
+        }
+        sensorRecord.field = r.id;
+        sensorRecord.ts = new Date(random.nextLong() % (d.getToDate().getTime() - d.getFromDate().getTime()) + d.getFromDate().getTime());
+        return sensorRecord;
+    }
+
+
+    public ArrayList<SensorRecord> randomAllSensorRecordByDate(Date date){
+        ArrayList<SensorRecord> sensorRecord = new ArrayList<SensorRecord>();
+        Config r;
+        for(Data d: dataHashMap.values()) {
+            if ((r = d.getConfig()).isSensor()) {
+                SensorRecord sensor = new SensorRecord();
+                if (r.isSwitch()) {
+                    if (d.currentValue()!= null) {
+                        if (random.nextInt(10)==0){
+                            sensor.value = (double) random.nextInt(2);
+                        }else{
+                            sensor.value = (boolean)d.currentValue()?1.0:0.0;
+                        }
+                    }else{
+                        sensor.value = (double) random.nextInt(2);
+                    }
+                } else {
+                    if (d.currentValue()!= null) {
+                        if (random.nextInt(10)==0) {
+                            sensor.value = (double) d.currentValue() + ((double) ((random.nextInt((int) ((r.max - r.min) * 100))) - ((r.max - r.min) * 50) + r.min) / 100.0) / 20.0;
+                            if (sensor.value < r.min) {
+                                sensor.value = r.min;
+                            }
+                            if (sensor.value > r.max) {
+                                sensor.value = r.max;
+                            }
+                        }else{
+                            sensor.value = (double)d.currentValue();
+                        }
+                    }else{
+                        sensor.value = (double) ((random.nextInt((int) ((r.max - r.min) * 100.0))) + r.min) / 100.0;
+                    }
+                }
+                sensor.field = r.id;
+                sensor.ts = date;
+                sensorRecord.add(sensor);
+            }
+        }
+        return sensorRecord;
+    }
+
+    protected void updateFromRandom() {
+        refreshInProgress = true;
+
+
+        //Régebbi adatok letöltése
+        if (getRpiCurrentDate() != null) {
+            Date startDataTime;
+            Date stopDataTime;
+            stopDataTime = Collections.max(dataHashMap.values(), new Comparator<Data>() {
+                @Override
+                public int compare(Data data, Data t1) {
+                    return data.getToDate().compareTo(t1.getToDate());
+                }
+            }).getToDate();
+            if (!forceDownloadAllData) {
+
+                long sdt = Long.MAX_VALUE;
+                for (Data data : dataHashMap.values()) {
+                    if (data.getLastUpdateDate() == null) {
+                        if (data.getFromDate().getTime() < sdt) {
+                            sdt = data.getFromDate().getTime();
+                        }
+                    } else {
+                        if (data.getLastUpdateDate().getTime() < sdt) {
+                            sdt = data.getLastUpdateDate().getTime();
+                        }
+                    }
+                }
+                startDataTime = new Date(sdt);
+            } else {
+                System.out.println("Force update all data  --------");
+                startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
+                    @Override
+                    public int compare(Data data, Data t1) {
+                        //System.out.println(data.getFromDate());
+                        return data.getFromDate().compareTo(t1.getFromDate());
+                    }
+                }).getFromDate();
+            }
+
+            System.out.println("Download startDataTime " + startDataTime);
+            System.out.println("Download stopDataTime " + stopDataTime);
+            SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
+
+            if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
+                forceDownloadAllData = false;
+                System.out.println("Start random history...");
+                ArrayList<SensorRecord> sensorRecords = new ArrayList<>();
+
+                for(int i = 0; i<100; i++){
+                    sensorRecords.add(randomSensorRecordField());
+                };
+                System.out.println(sensorRecords);
+                for (Data d : dataHashMap.values()) {
+                    d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                }
+            }
+        }
+
+
+        //Aktuális adatok letöltése
+
+        System.out.println("Start random current data...");
+        androidLastCurrentDataDate = Calendar.getInstance().getTime();
+
+
+        ArrayList<SensorRecord> sensorRecords = randomAllSensorRecordByDate(Calendar.getInstance().getTime());
+
+        setRpiLastCurrentDataDate(new Date(sensorRecords.get(0).ts.getTime()));
+        generateRpiTimeUpdateNotification();
+
+        for (Data d : dataHashMap.values()) {
+            d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+        }
+        System.out.println(sensorRecords);
+
+        refreshInProgress = false;
     }
 
     @Override
@@ -262,114 +433,8 @@ public class DatabaseService extends IntentService {
         while (true) {
             if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
                 System.out.println("Refresh need");
-                refreshInProgress = true;
-
-
-                //Régebbi adatok letöltése
-                if (getRpiCurrentDate()!= null) {
-                    Date startDataTime;
-                    Date stopDataTime;
-                    stopDataTime = Collections.max(dataHashMap.values(), new Comparator<Data>() {
-                        @Override
-                        public int compare(Data data, Data t1) {
-                            return data.getToDate().compareTo(t1.getToDate());
-                        }
-                    }).getToDate();
-                    if (!forceDownloadAllData) {
-
-                        long sdt = Long.MAX_VALUE;
-                        for (Data data : dataHashMap.values()) {
-                            if (data.getLastUpdateDate() == null) {
-                                if (data.getFromDate().getTime() < sdt) {
-                                    sdt = data.getFromDate().getTime();
-                                }
-                            } else {
-                                if (data.getLastUpdateDate().getTime() < sdt) {
-                                    sdt = data.getLastUpdateDate().getTime();
-                                }
-                            }
-                        }
-                        startDataTime = new Date(sdt);
-                    }else{
-                        System.out.println("Force update all data  --------");
-                        startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
-                            @Override
-                            public int compare(Data data, Data t1) {
-                                //System.out.println(data.getFromDate());
-                                return data.getFromDate().compareTo(t1.getFromDate());
-                            }
-                        }).getFromDate();
-                    }
-
-                    System.out.println("Download startDataTime " + startDataTime);
-                    System.out.println("Download stopDataTime " + stopDataTime);
-                    SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
-
-                    if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
-                        forceDownloadAllData = false;
-                        HashMap<String, String> get = new HashMap<>();
-                        get.put("format", "xml");
-                        get.put("start", simpleDateFormat.format(startDataTime));
-                        get.put("stop", simpleDateFormat.format(stopDataTime));
-                        new HttpDownloadUtil() {
-                            @Override
-                            public void onDownloadStart() {
-                                System.out.println("Start downloading history...");
-                            }
-
-                            @Override
-                            public void onDownloadComplete(StringBuilder stringBuilder) {
-                                if (stringBuilder == null) {
-                                    generateDownloadFailedNotification();
-                                    return;
-                                }
-                                ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
-                                //System.out.println(sensorRecords);
-                                for (Data d : dataHashMap.values()) {
-                                    //d.updateFromRandom();
-                                    d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
-                                }
-                                //generateDownloadCompleteNotification();
-                            }
-                        }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
-                    }
-                }
-
-                //Aktuális adatok letöltése
-                HashMap<String, String> get = new HashMap<>();
-                get.put("format", "xml");
-                new HttpDownloadUtil() {
-                    @Override
-                    public void onDownloadStart() {
-                        System.out.println("Start downloading current data...");
-                        androidLastCurrentDataDate = Calendar.getInstance().getTime();
-                    }
-
-                    @Override
-                    public void onDownloadComplete(StringBuilder stringBuilder) {
-                        refreshInProgress = false;
-
-                        if (stringBuilder == null) {
-                            generateDownloadFailedNotification();
-                            return;
-                        }
-                        ArrayList<SensorRecord> sensorRecords = ParseCurrentDataXML.parse(stringBuilder.toString());
-
-                        if (sensorRecords.size()>0){
-                            rpiLastCurrentDataDate = new Date (sensorRecords.get(0).ts.getTime() - getDownloadTimeMs() / 2);
-                        }
-
-                        for (Data d : dataHashMap.values()) {
-                            d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
-                        }
-
-                        getDownloadTimeMs();
-                        generateDownloadCompleteNotification();
-
-
-                    }
-                }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
-
+                updateFromHTTP();
+                //updateFromRandom();
             }
             System.out.println(refreshInProgress);
             System.out.println("RPI: " + getRpiCurrentDate());
@@ -389,7 +454,9 @@ public class DatabaseService extends IntentService {
                 }
             }
             if (stringBuilder.length() > 0) {
-                generateAlarmNotification(stringBuilder.toString());
+                generateAlarmNotification(alarmText = stringBuilder.toString());
+            } else {
+                alarmText = null;
             }
 
             try {
@@ -398,6 +465,13 @@ public class DatabaseService extends IntentService {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String alarmText = null;
+
+    synchronized
+    public String getAlarmText() {
+        return alarmText;
     }
 
     public void generateAlarmNotification(String s) {
@@ -452,7 +526,7 @@ public class DatabaseService extends IntentService {
                     dataHashMap.put(c.id, new BoolData(c) {
                         @Override
                         public Date getFromDate() {
-                            if (getRpiCurrentDate()== null) return null;
+                            if (getRpiCurrentDate() == null) return null;
                             return new Date(getRpiCurrentDate().getTime() - Config.getDataStoreIntervalMs());
                         }
 
@@ -465,7 +539,7 @@ public class DatabaseService extends IntentService {
                     dataHashMap.put(c.id, new NumberData(c) {
                         @Override
                         public Date getFromDate() {
-                            if (getRpiCurrentDate()== null) return null;
+                            if (getRpiCurrentDate() == null) return null;
                             return new Date(getRpiCurrentDate().getTime() - Config.getDataStoreIntervalMs());
                         }
 
@@ -563,11 +637,11 @@ public class DatabaseService extends IntentService {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    public float getDistanceFromHomeInMeters() {
+    public Float getDistanceFromHomeInMeters() {
         if (locationLastLocation != null) {
             return locationLastLocation.distanceTo(locationHome);
         }
-        return 0;
+        return null;
     }
 
     public Location getLocationLastLocation() {

@@ -32,10 +32,12 @@ public class BoolGraphView extends GraphView<Boolean> {
     protected void onDrawGraphEntry(Canvas canvas, NamedArrayList<Entry<Boolean>> entries) {
         Paint p = new Paint();
         p.setAntiAlias(true);
+        p.setStrokeWidth(padding);
         for (int i = 0; i < entries.size()-1; i++) {
             if (entries.get(i).value) {
-                p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h/7.0 + h/50));
-                p.setColor(entries.get(i).color - (((int) (((double) i / (double) entries.size()) * 228.0)) << 24));
+                //p.setStrokeWidth((int) (((double) i / (double) entries.size()) * h/7.0 + h/50));
+                //p.setColor(entries.get(i).color - (((int) (((double) i / (double) entries.size()) * 228.0)) << 24));
+                p.setColor(entries.get(0).color);
                 int x1 = (int) ((double) (entries.get(i).date.getTime() - timeMin) * pxms);
                 int y1 = h - (int) (0.655 * pxunit) + (int) (this.min * pxunit);
                 int x2 = (int) ((double) (entries.get(i + 1).date.getTime() - timeMin) * pxms);

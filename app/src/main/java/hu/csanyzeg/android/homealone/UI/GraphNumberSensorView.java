@@ -220,6 +220,27 @@ public class GraphNumberSensorView extends RelativeLayout implements InitableUI,
         graphView.getEntryList().clear();
         for (NumberData numberData: data.values()) {
             graphView.getEntryList().add(numberData.getGraphEntries());
+
+        }
+        if (graphView.getEntryList().size()>0) {
+            try {
+                graphView.setTimeMin(Collections.min(data.values(), new Comparator<NumberData>() {
+                    @Override
+                    public int compare(NumberData numberData, NumberData t1) {
+                        return numberData.getFromDate().compareTo(t1.getFromDate());
+                    }
+                }).getFromDate().getTime());
+
+                graphView.setTimeMax(Collections.max(data.values(), new Comparator<NumberData>() {
+                    @Override
+                    public int compare(NumberData numberData, NumberData t1) {
+                        return numberData.getToDate().compareTo(t1.getToDate());
+                    }
+                }).getToDate().getTime());
+            }
+            catch (NullPointerException e){
+
+            }
         }
         graphView.invalidate();
         //System.out.println("update");

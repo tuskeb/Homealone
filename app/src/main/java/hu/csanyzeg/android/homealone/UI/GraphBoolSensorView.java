@@ -10,11 +10,14 @@ import android.widget.TextView;
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
+import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.InitableUI;
 import hu.csanyzeg.android.homealone.R;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -145,6 +148,25 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
         graphView.getEntryList().clear();
         for (BoolData boolData1: data.values()) {
             graphView.getEntryList().add(boolData1.getGraphEntries());
+        }
+        if (graphView.getEntryList().size()>0) {
+            try {
+                graphView.setTimeMin(Collections.min(data.values(), new Comparator<BoolData>() {
+                    @Override
+                    public int compare(BoolData numberData, BoolData t1) {
+                        return numberData.getFromDate().compareTo(t1.getFromDate());
+                    }
+                }).getFromDate().getTime());
+
+                graphView.setTimeMax(Collections.max(data.values(), new Comparator<BoolData>() {
+                    @Override
+                    public int compare(BoolData numberData, BoolData t1) {
+                        return numberData.getToDate().compareTo(t1.getToDate());
+                    }
+                }).getToDate().getTime());
+            } catch (NullPointerException e) {
+
+            }
         }
         graphView.invalidate();
 

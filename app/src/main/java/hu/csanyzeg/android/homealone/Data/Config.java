@@ -21,6 +21,8 @@ public class Config implements Serializable {
     public static Double gpsLongitude = null;
     public static String gpscomment = null;
 
+
+    public Integer color = null;
     public String id = null;//
     public String device = "";//
     public String display = "";//
