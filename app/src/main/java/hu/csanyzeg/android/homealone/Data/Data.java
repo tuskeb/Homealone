@@ -282,12 +282,25 @@ abstract public class Data<T> {
         }
     }
 
+
     @Override
-    synchronized
     public String toString() {
         return "Data{" +
-                "lastUpdateDate=" + lastUpdateDate +
+                "config=" + config +
+                ", settingsValue=" + settingsValue +
+                ", fastPollingRemainCount=" + fastPollingRemainCount +
+                ", fastPollingIntervalMs=" + fastPollingIntervalMs +
+                ", lastUpdateDate=" + lastUpdateDate +
                 ", refreshIntervalMs=" + refreshIntervalMs +
+                ", graphEntries=" + graphEntries +
+                ", onDataUpdateListener=" + onDataUpdateListener +
+                ", alarmSwitch=" + alarmSwitch +
+                ", valueCount=" + valueCount +
+                ", color=" + color +
+                ", lastUpdateFromDate=" + lastUpdateFromDate +
+                ", lastUpdateToDate=" + lastUpdateToDate +
+                ", minDate=" + minDate +
+                ", maxDate=" + maxDate +
                 '}';
     }
 

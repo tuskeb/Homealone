@@ -9,5 +9,4 @@ import hu.csanyzeg.android.homealone.Data.BoolData;
  */
 
 public interface BoolSensor extends Sensor<BoolData>, BoolValue{
-    public void setValue(Boolean value, Date lastUpdateDate);
 }

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Interfaces.Sensor;
-import hu.csanyzeg.android.homealone.UI.FullNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.GraphNumberSensorView;
 import hu.csanyzeg.android.homealone.Utils.FullSensorViewInflater;
 
 import java.util.ArrayList;
@@ -153,12 +153,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         for(int i = 0; i<layout.getChildCount();i++) {
             final View v = layout.getChildAt(i);
-            if (v instanceof FullNumberSensorView){
-                ((FullNumberSensorView)v).getGraphNumberSensorView().getGraphView().setOnClickListener(new View.OnClickListener() {
+            if (v instanceof GraphNumberSensorView){
+                v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getBaseContext(), GraphActivity.class);
-                        intent.putExtra(DatabaseService.BR_DATA_ID, ((FullNumberSensorView) v).getConfig().id);
+                        intent.putExtra(DatabaseService.BR_DATA_ID, ((GraphNumberSensorView) v).getConfig().id);
                         startActivity(intent);
                     }
                 });

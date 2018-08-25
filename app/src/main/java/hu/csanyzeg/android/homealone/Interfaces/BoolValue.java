@@ -6,5 +6,6 @@ package hu.csanyzeg.android.homealone.Interfaces;
 
 public interface BoolValue {
     public void setValue(Boolean value);
+
     public Boolean getValue();
 }

@@ -9,10 +9,4 @@ import hu.csanyzeg.android.homealone.Data.NumberData;
  */
 
 public interface NumberSensor extends Sensor<NumberData>, MinMax, NumberValue{
-
-    public void setValue(Double value, Date lastUpdateDate);
-
-    //public NumberData getData();
-
-    //public void setData(NumberData data);
 }

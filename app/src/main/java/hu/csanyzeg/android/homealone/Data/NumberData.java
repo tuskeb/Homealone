@@ -91,4 +91,9 @@ abstract public class NumberData extends Data<Double> {
                 .replace("%alarmmin", String.format("%." + config.precision + "f",config.alarmMinValue))
                 .replace("%alarmmax", String.format("%." + config.precision + "f",config.alarmMaxValue));
     }
+
+    @Override
+    public synchronized Double currentValue() {
+        return super.currentValue();
+    }
 }

@@ -4,21 +4,18 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
-import hu.csanyzeg.android.homealone.Data.Data;
-import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.InitableUI;
 import hu.csanyzeg.android.homealone.R;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -26,14 +23,21 @@ import java.util.HashMap;
  */
 
 public class GraphBoolSensorView extends RelativeLayout implements InitableUI, BoolSensor {
-    private BoolView valueView;
-    private BoolGraphView graphView;
-    private TextView lastUpdateDate;
-    private BoolIndicatorView boolIndicatorView;
-    private String sensorId;
+    protected BoolGraphView graphView;
+    protected TextView displayView;
+    protected BoolView valueView;
+    protected ImageView iconView;
+    protected BoolIndicatorView boolIndicatorView;
 
-    protected HashMap<String, BoolData> data = null;
+
+    protected String sensorId;
+
+
+    protected final HashMap<String, BoolData> data = new HashMap<>();
     protected Config config = null;
+
+
+
 
     public GraphBoolSensorView(Context context) {
         super(context);
@@ -55,7 +59,10 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
 
     @Override
     public Boolean getValue() {
-        return valueView.getValue();
+        for(BoolData d : data.values()){
+            return d.currentValue();
+        }
+        return null;
     }
 
     public String getSensorId() {
@@ -78,48 +85,18 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
 
     public void init(){
         valueView = getRootView().findViewById(R.id.value);
+        iconView  = getRootView().findViewById(R.id.icon_view);
+        displayView = getRootView().findViewById(R.id.txt);
         graphView = getRootView().findViewById(R.id.graph);
-        lastUpdateDate = getRootView().findViewById(R.id.lastupdatedate);
         boolIndicatorView = getRootView().findViewById(R.id.boolindicator);
     }
 
     public void setValue(Boolean value){
-        valueView.setValue(value);
         boolIndicatorView.setValue(value);
-    }
-
-    public void setLastUpdateDate(Date lastUpdateDate){
-        if (lastUpdateDate == null){
-            this.lastUpdateDate.setText("-");
-            return;
-        }
-        this.lastUpdateDate.setText((new SimpleDateFormat("yyyy.MM.dd HH:mm:ss")).format(lastUpdateDate));
-    }
-
-    public void setValue(Boolean value, Date lastUpdateDate) {
-        setValue(value);
-        setLastUpdateDate(lastUpdateDate);
-    }
-
-
-    public void setValue(Boolean value, long lastUpdateDate) {
-        setValue(value);
-        Date date = new Date();
-        date.setTime(lastUpdateDate);
-        setLastUpdateDate(date);
-    }
-
-    public BoolView getValueView() {
-        return valueView;
     }
 
     public BoolGraphView getGraphView() {
         return graphView;
-    }
-
-    @Override
-    public void setText(String text) {
-
     }
 
     @Override
@@ -128,12 +105,16 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
     }
 
     @Override
-    public void setData(HashMap<String, BoolData> data) {
-        this.data = data;
+    public void addData(String id, BoolData d) {
+        this.data.put(id, d);
+        updateData();
+    }
+
+    @Override
+    public void updateData() {
         BoolData boolData = this.data.get(config.id);
         if (boolData != null) {
             setValue(boolData.currentValue());
-            setLastUpdateDate(boolData.currentDate());
         }else{
 
             boolean b = false;
@@ -170,11 +151,7 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
         }
         graphView.invalidate();
 
-    }
 
-    @Override
-    public void updateData() {
-        setData(getData());
     }
 
     @Override
@@ -186,7 +163,7 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
     public void setConfig(Config config) {
         this.config = config;
         setSensorId(config.id);
-        setText(config.display);
+        displayView.setText(config.display);
     }
 
 }

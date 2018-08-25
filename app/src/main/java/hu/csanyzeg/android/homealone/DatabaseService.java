@@ -433,8 +433,8 @@ public class DatabaseService extends IntentService {
         while (true) {
             if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
                 System.out.println("Refresh need");
-                updateFromHTTP();
-                //updateFromRandom();
+                //updateFromHTTP();
+                updateFromRandom();
             }
             System.out.println(refreshInProgress);
             System.out.println("RPI: " + getRpiCurrentDate());

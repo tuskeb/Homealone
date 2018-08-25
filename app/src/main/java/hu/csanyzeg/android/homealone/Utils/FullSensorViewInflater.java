@@ -2,24 +2,20 @@ package hu.csanyzeg.android.homealone.Utils;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import hu.csanyzeg.android.homealone.Data.AlarmEvent;
 import hu.csanyzeg.android.homealone.Data.Data;
-import hu.csanyzeg.android.homealone.Data.SensorRecord;
 import hu.csanyzeg.android.homealone.DatabaseService;
 import hu.csanyzeg.android.homealone.Interfaces.Sensor;
-import hu.csanyzeg.android.homealone.UI.AlarmFullBoolSensorView;
-import hu.csanyzeg.android.homealone.UI.AlarmMaxFullSensorFullNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.AlarmBoolSensorView;
+import hu.csanyzeg.android.homealone.UI.AlarmMaxSensorNumberSensorView;
 import hu.csanyzeg.android.homealone.Data.Config;
-import hu.csanyzeg.android.homealone.UI.AlarmMinMaxFullSensorFullNumberSensorView;
-import hu.csanyzeg.android.homealone.UI.AlarmMinFullSensorFullNumberSensorView;
-import hu.csanyzeg.android.homealone.UI.FullBoolSensorView;
-import hu.csanyzeg.android.homealone.UI.FullNumberSensorView;
-import hu.csanyzeg.android.homealone.UI.InputFullNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.AlarmMinMaxSensorNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.AlarmMinFullSensorNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.GraphBoolSensorView;
+import hu.csanyzeg.android.homealone.UI.GraphNumberSensorView;
+import hu.csanyzeg.android.homealone.UI.InputNumberSensorView;
 import hu.csanyzeg.android.homealone.UI.OnBoolValueChangeListener;
 import hu.csanyzeg.android.homealone.UI.OnValueChangedListener;
 import hu.csanyzeg.android.homealone.UI.SwitchFullBoolSensorView;
@@ -42,8 +38,8 @@ public class FullSensorViewInflater {
         //System.out.println(config);
         if (!data.getConfig().isSwitch()) {
             if (data.getConfig().isWrite()){
-                sensorView = new InputFullNumberSensorView(context);
-                ((InputFullNumberSensorView)sensorView).setOnValueChangedListener(new OnValueChangedListener() {
+                sensorView = new InputNumberSensorView(context);
+                ((InputNumberSensorView)sensorView).setOnValueChangedListener(new OnValueChangedListener() {
                     @Override
                     public void doubleValueChanged(final Double value) {
                         HashMap<String, String> get = new HashMap<>();
@@ -73,17 +69,17 @@ public class FullSensorViewInflater {
                 if (config.getAlarmEvent() != AlarmEvent.never) {
                     switch (config.getAlarmType()) {
                         case max:
-                            sensorView = new AlarmMaxFullSensorFullNumberSensorView(context);
+                            sensorView = new AlarmMaxSensorNumberSensorView(context);
                             break;
                         case min:
-                            sensorView = new AlarmMinFullSensorFullNumberSensorView(context);
+                            sensorView = new AlarmMinFullSensorNumberSensorView(context);
                             break;
                         case minmax:
-                            sensorView = new AlarmMinMaxFullSensorFullNumberSensorView(context);
+                            sensorView = new AlarmMinMaxSensorNumberSensorView(context);
                             break;
                     }
                 } else {
-                    sensorView = new FullNumberSensorView(context);
+                    sensorView = new GraphNumberSensorView(context);
                 }
             }
             sensorView.setConfig(config);
@@ -92,7 +88,7 @@ public class FullSensorViewInflater {
             }
         }else {
             if (config.alarmSet) {
-                sensorView = new AlarmFullBoolSensorView(context);
+                sensorView = new AlarmBoolSensorView(context);
             } else {
                 if (config.isWrite()) {
                     sensorView = new SwitchFullBoolSensorView(context);
@@ -154,11 +150,14 @@ public class FullSensorViewInflater {
                     });
 
                 } else {
-                    sensorView = new FullBoolSensorView(context);
+                    sensorView = new GraphBoolSensorView(context);
                 }
             }
             sensorView.setConfig(config);
             if (config.isSensor()) {
+                System.out.println(sensorView);
+                System.out.println(sensorView.getData());
+                System.out.printf(data.toString());
                 sensorView.getData().put(config.id, data);
             }
 

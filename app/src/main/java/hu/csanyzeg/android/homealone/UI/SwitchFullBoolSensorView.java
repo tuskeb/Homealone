@@ -8,13 +8,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
-import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Interfaces.Switch;
 import hu.csanyzeg.android.homealone.R;
 
@@ -22,7 +20,7 @@ import hu.csanyzeg.android.homealone.R;
  * Created by tanulo on 2018. 07. 30..
  */
 
-public class SwitchFullBoolSensorView extends FullBoolSensorView implements Switch {
+public class SwitchFullBoolSensorView extends GraphBoolSensorView implements Switch {
     private OnBoolValueChangeListener onCheckChangeListener =null;
 
     TextView stabinfoTextView;
@@ -52,7 +50,7 @@ public class SwitchFullBoolSensorView extends FullBoolSensorView implements Swit
 
     @Override
     public void inflate() {
-        LayoutInflater.from(getContext()).inflate(R.layout.switch_full_bool_sensor_view, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.switch_bool_sensor_view, this);
     }
     CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
