@@ -2,7 +2,6 @@ package hu.csanyzeg.android.homealone.UI;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
@@ -12,8 +11,6 @@ import android.view.View;
 import hu.csanyzeg.android.homealone.Interfaces.MinMax;
 import hu.csanyzeg.android.homealone.Interfaces.NumberValue;
 
-import java.text.DecimalFormat;
-
 /**
  * Created by tanulo on 2018. 06. 26..
  */
@@ -21,8 +18,7 @@ import java.text.DecimalFormat;
 public class PercentView extends SurfaceView implements MinMax, NumberValue {
     private Double min = -10.0, max=30.0, value=0.0;
     private int countOfDivision = 10;
-    private int precision = 1;
-    private String pattern="#";
+    private int decimal = 1;
 
     public PercentView(Context context) {
         super(context);
@@ -90,8 +86,11 @@ public class PercentView extends SurfaceView implements MinMax, NumberValue {
         int paddingLeft = (int)((double)w *0.9);
         Paint bgPaint = new Paint();
         Paint txtPaint = new Paint();
-        String txt = (new DecimalFormat(pattern)).format(value).replace(".",",");
-        txtPaint.setTextSize(h / (int)((double)countOfDivision*1.6));
+        String txt = String.format("%." + decimal + "f",value).replace(".",",");
+        txtPaint.setTextSize(((float)h / ((float) countOfDivision*1.6f)));
+        if (txtPaint.measureText(txt)>(float)(w*0.7)){
+            txtPaint.setTextSize((txtPaint.getTextSize() * (float)(w)*0.7f / txtPaint.measureText(txt)));
+        }
 
         if (this.value != null && this.value>=value) {
             int v = (int)(256.0 * (double)index/(double)countOfDivision);
@@ -105,22 +104,6 @@ public class PercentView extends SurfaceView implements MinMax, NumberValue {
         canvas.drawText(txt, w / 2 - txtPaint.measureText(txt.replace("-", "--")) / 2, h - height * (index + 1) + height - (int) ((double) paddingTop * 1.8), txtPaint);
     }
 
-    public int getPrecision() {
-        return precision;
-    }
-
-    public void setPrecision(int precision) {
-        this.precision = precision;
-        if (precision <= 0){
-            pattern = "#";
-            return;
-        }
-        pattern = "#.";
-        for(int i=0; i<precision;i++){
-            pattern+="#";
-        }
-        invalidate();
-    }
 
     @Override
     public void setSuffix(String unit) {
@@ -129,6 +112,6 @@ public class PercentView extends SurfaceView implements MinMax, NumberValue {
 
     @Override
     public void setDecimal(int decimal) {
-
+        this.decimal = decimal;
     }
 }

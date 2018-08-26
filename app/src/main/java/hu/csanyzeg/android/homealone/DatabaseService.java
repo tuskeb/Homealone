@@ -1,7 +1,12 @@
 package hu.csanyzeg.android.homealone;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Path;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +22,7 @@ import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Data.OnDataUpdateListener;
+import hu.csanyzeg.android.homealone.Data.Options;
 import hu.csanyzeg.android.homealone.Data.SensorRecord;
 import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 import hu.csanyzeg.android.homealone.Utils.NotificationHelper;
@@ -65,7 +71,9 @@ public class DatabaseService extends IntentService {
     private Date rpiLastCurrentDataDate;
     private Date androidLastCurrentDataDate;
 
-    private String serverURL = "http://zwl.strangled.net:9002";
+    private String serverURL;
+    private boolean notificationEnabled;
+    private SharedPreferences readPref;
 
     public String getServerURL() {
         return serverURL;
@@ -74,6 +82,26 @@ public class DatabaseService extends IntentService {
     //private ArrayList<Config> configs = null;
     //public static final String CONFIGS = "configs";
 
+    public BroadcastReceiver settingsBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+
+                switch (bundle.getInt(Options.BR_MESSAGE)) {
+                    case Options.BR_UPDATE_SETTINGS:
+                        System.out.println("---------------------- Update Settings --------------");
+                        String s = serverURL;
+                        updateSettings();
+                        if (!s.equals(serverURL)) {
+                            System.out.println("---------------------- Read Config --------------");
+                            readConfig();
+                        }
+                        break;
+                }
+            }
+        }
+    };
 
     public DatabaseService() {
         super(logString);
@@ -433,12 +461,15 @@ public class DatabaseService extends IntentService {
         while (true) {
             if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
                 System.out.println("Refresh need");
-                //updateFromHTTP();
-                updateFromRandom();
+                if (!serverURL.equals("random")) {
+                    updateFromHTTP();
+                }else {
+                    updateFromRandom();
+                }
             }
-            System.out.println(refreshInProgress);
+            /*System.out.println(refreshInProgress);
             System.out.println("RPI: " + getRpiCurrentDate());
-            System.out.println("And: " + Calendar.getInstance().getTime());
+            System.out.println("And: " + Calendar.getInstance().getTime());*/
             //System.out.println(dataHashMap.size());
             //generateAlarmNotification();
             StringBuilder stringBuilder = new StringBuilder();
@@ -478,8 +509,10 @@ public class DatabaseService extends IntentService {
         if (!s.equals(lastNotificationString)) {
             lastNotificationString = s;
             //System.out.println(s);
-            NotificationHelper notificationHelper = new NotificationHelper(this);
-            notificationHelper.createNotification("Riasztás", s);
+            if (notificationEnabled) {
+                NotificationHelper notificationHelper = new NotificationHelper(this);
+                notificationHelper.createNotification("Riasztás", s);
+            }
         }
     }
 
@@ -494,18 +527,21 @@ public class DatabaseService extends IntentService {
         }
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
 
-        //ParseConfigXML parseConfigXML = new ParseConfigXML(new File(Environment.getExternalStorageDirectory(), "Download/homealone_metadataa.xml")){
-        /*ParseConfigXML parseConfigXML = new ParseConfigXML(R.raw.xml_homealone_metadata, this){
-            @Override
-            protected void onFileOpenError(FileNotFoundException e) {
-                Log.e("Open",e.getMessage());
-            }
-        };
-*/
+    private void updateSettings(){
+
+        notificationEnabled = readPref.getBoolean(Options.OPTION_NOTIFICATION_ENABLE, Options.DEFAULT_NOTIFICATION_ENABLE);
+        serverURL = readPref.getString(Options.OPTION_SERVER_URL, Options.DEFAULT_SERVER_URL);
+
+    }
+
+    private void readConfig(){
+
+        if (configs!= null) {
+            configs.clear();
+        }
+        dataHashMap.clear();
+
         ParseConfigINI parseConfigINI = new ParseConfigINI(R.raw.ini_homealone_metadata, this) {
             @Override
             protected void onFileOpenError(FileNotFoundException e) {
@@ -570,6 +606,30 @@ public class DatabaseService extends IntentService {
         }
 
         generateConfigUpdateNotification();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+
+
+        readPref = getSharedPreferences("pref", MODE_PRIVATE);
+
+
+
+        registerReceiver(settingsBroadcastReceiver, new IntentFilter(Options.NOTIFICATION));
+
+        //ParseConfigXML parseConfigXML = new ParseConfigXML(new File(Environment.getExternalStorageDirectory(), "Download/homealone_metadataa.xml")){
+        /*ParseConfigXML parseConfigXML = new ParseConfigXML(R.raw.xml_homealone_metadata, this){
+            @Override
+            protected void onFileOpenError(FileNotFoundException e) {
+                Log.e("Open",e.getMessage());
+            }
+        };
+*/
+        updateSettings();
+        readConfig();
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

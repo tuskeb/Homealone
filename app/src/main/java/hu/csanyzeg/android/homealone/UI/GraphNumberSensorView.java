@@ -246,5 +246,6 @@ public class GraphNumberSensorView extends RelativeLayout implements InitableUI,
     public void setDecimal(int decimal) {
         valueView.setDecimal(config.precision);
         graphView.setDecimal(config.precision);
+        percentView.setDecimal(config.precision);
     }
 }

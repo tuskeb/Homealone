@@ -10,8 +10,12 @@ import android.icu.util.Measure;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.Config;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private TextView rpiTimeTV;
     private TextView distanceTV;
     private TextView alarmTV;
+    private LinearLayout noconnection;
 
 
     private BroadcastReceiver databaseBroadcastReceiver = new BroadcastReceiver() {
@@ -44,7 +49,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     case DatabaseService.BR_DATA_UPDATE:
                         //System.out.println(databaseService.getDataHashMap());
                         int hash = bundle.getInt(DatabaseService.BR_OBJECT_HASH);
-
+                        if (noconnection.getVisibility()!=View.GONE) {
+                            noconnection.setVisibility(View.GONE);
+                        }
                         for(Sensor f : sensors) {
                             if (null != f.getData().get(bundle.getString(DatabaseService.BR_DATA_ID))) {
                                 f.updateData();
@@ -55,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         //databaseService.getDataHashMap();
                         if (databaseService != null) {
                             refreshUI(databaseService.getDataHashMap(), databaseService.getConfigs());
+                            if (noconnection.getVisibility()!=View.GONE) {
+                                noconnection.setVisibility(View.GONE);
+                            }
                         }
                         break;
                     case DatabaseService.BR_LOCATION_CHANGE:
@@ -76,6 +86,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             }
                         }
                     break;
+                    case DatabaseService.BR_DOWNLOAD_FAILED:
+                        if (noconnection.getVisibility()!=View.VISIBLE) {
+                            noconnection.setVisibility(View.VISIBLE);
+                        }
+                        break;
 /*                    case DatabaseService.BR_RPI_TIME_UPDATE:
 
                        break;*/
@@ -85,6 +100,26 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     };
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.options_menu:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.exit_menu:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         rpiTimeTV = findViewById(R.id.rpiTimeTV);
         distanceTV = findViewById(R.id.distanceTV);
         alarmTV = findViewById(R.id.alarmTV);
+        noconnection = findViewById(R.id.noconnection);
 
 
         rpiTimeTV.postDelayed(new Runnable() {
@@ -120,7 +156,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     public void refreshUI(HashMap<String, Data> dataHashMap, ArrayList<Config> configs){
-
+        if (layout!= null) {
+            layout.removeAllViews();
+        }
+        if (layout2!= null) {
+            layout2.removeAllViews();
+        }
         for (Config config : configs) {
             if (config.isEnabled()) {
                 if (layout.findViewWithTag(config.id)==null) {

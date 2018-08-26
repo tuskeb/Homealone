@@ -21,17 +21,8 @@ public class NumberView extends TextView implements InitableUI, NumberValue {
     private String suffix = "NA";
     private Double value = 0.0;
     private int decimal = 1;
-    private String pattern="#.0";
     private boolean multiLine = true;
     private int defaultColor;
-
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
 
     public NumberView(Context context) {
         super(context);
@@ -76,14 +67,6 @@ public class NumberView extends TextView implements InitableUI, NumberValue {
 
     public void setDecimal(int decimal) {
         this.decimal = decimal;
-        if (decimal <= 0){
-            pattern = "#";
-            return;
-        }
-        pattern = "#.";
-        for(int i = 0; i< decimal; i++){
-            pattern+="0";
-        }
         invalidate();
     }
 
@@ -95,13 +78,13 @@ public class NumberView extends TextView implements InitableUI, NumberValue {
                 setText("-" + "\n" + suffix);
                 return;
             }
-            setText((new DecimalFormat(pattern)).format(value).replace(".",",") + "\n" + suffix);
+            setText(String.format("%." + decimal + "f",value).replace(".",",") + "\n" + suffix);
         }else{
             if (value == null){
                 setText("-");
                 return;
             }
-            setText((new DecimalFormat(pattern)).format(value).replace(".",",") + " " + suffix);
+            setText(String.format("%." + decimal + "f",value).replace(".",",") + " " + suffix);
         }
     }
 
