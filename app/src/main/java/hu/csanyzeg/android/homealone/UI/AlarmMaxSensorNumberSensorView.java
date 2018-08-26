@@ -89,6 +89,11 @@ public class AlarmMaxSensorNumberSensorView extends AlarmNumberSensorView {
     @Override
     public void setConfig(Config config) {
         super.setConfig(config);
+        if (config.alarmWrite){
+            maxEditValueView.setVisibility(VISIBLE);
+        }else{
+            maxEditValueView.setVisibility(GONE);
+        }
     }
 
 

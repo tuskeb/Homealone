@@ -6,37 +6,39 @@
     android:id="@+id/graphNumberSensorViewLayout">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
+
         android:orientation="horizontal"
         android:id="@+id/sensorNameViewLayout">
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_weight="0.2"
-            android:layout_height="50dp" />
         <TextView
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="0.6"
             android:id="@+id/txt"
             android:paddingBottom="5dp"
             android:paddingLeft="5dp"
-            android:paddingTop="30dp"
-            android:textSize="20dp"
+            android:textSize="22dp"
+            android:textStyle="italic"
             android:text="Label"
-
-            android:textAlignment="center"
+            android:gravity="left|bottom"
             />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:layout_height="match_parent" />
         <hu.csanyzeg.android.homealone.UI.NumberView
             android:layout_width="0dp"
-            android:paddingTop="30dp"
-            android:layout_weight="0.2"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:textSize="20dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
+            android:layout_weight="0.3"
+            android:textStyle="italic"
+            android:layout_height="match_parent"
+            android:gravity="right|bottom"
+            android:textSize="14dp"
             android:id="@+id/value"
             app:numberview_multiLine="false"
             app:numberview_decimal="2"
-            app:numberview_suffix="X"
+            app:numberview_suffix="NA"
             />
     </LinearLayout>
 
@@ -65,6 +67,7 @@
                     android:layout_width="0dp"
                     android:layout_weight=".7"
                     android:layout_height="180dp"
+                    android:layout_marginLeft="5dp"
                     android:background="#ffffffff"
                     />
                 <hu.csanyzeg.android.homealone.UI.PercentView

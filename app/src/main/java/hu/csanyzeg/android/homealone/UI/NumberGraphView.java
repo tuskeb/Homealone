@@ -18,23 +18,25 @@ import java.util.Comparator;
  * Created by tanulo on 2018. 06. 26..
  */
 
-public class NumberGraphView extends GraphView<Double>{
+public class NumberGraphView extends GraphView<Double> {
 
-    private int decimal = 1;
+    protected int decimal = 1;
 
-    private String pattern = "#";
-
+    protected String pattern = "#";
 
     public NumberGraphView(Context context) {
         super(context);
+        horizontalDivision = 4;
     }
 
     public NumberGraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        horizontalDivision = 4;
     }
 
     public NumberGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        horizontalDivision = 4;
     }
 
 
@@ -161,8 +163,8 @@ public class NumberGraphView extends GraphView<Double>{
     public void createCoordinateSystem(int vdiv, int hdiv) {
         super.createCoordinateSystem(vdiv, hdiv);
         HorizontalGraphLine h;
-        for (int i=1; i<=5; i++) {
-            horizontalGraphLineList.add(h = new HorizontalGraphLine((max - min) / 5.0 * (double)i, 0x7f000000, String.format("%."+decimal+"f",(max - min) / 5.0* (double)i)));
+        for (int i=0; i<=hdiv; i++) {
+            horizontalGraphLineList.add(h = new HorizontalGraphLine((max - min) / (double)hdiv * (double)i, 0x5f000000, String.format("%."+decimal+"f",(max - min) / (double) hdiv* (double)i) + " " + unit));
             hCoordLines.add(h);
         }
     }
@@ -170,6 +172,6 @@ public class NumberGraphView extends GraphView<Double>{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        onDrawSuffix(canvas);
+        //onDrawSuffix(canvas);
     }
 }

@@ -127,12 +127,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id, databaseService);
                     if (sensorView != null) {
                         sensors.add((Sensor) sensorView);
-                        /*if (layout2!=null && sensors.size()%2==0){
+                        if (layout2!=null && sensors.size()%2==0){
                             layout2.addView(sensorView);
                         }else{
                             layout.addView(sensorView);
-                        }*/
-                        if (layout2!=null){
+                        }
+                        /*if (layout2!=null){
                             if (((Sensor) sensorView).getConfig().isSwitch()){
                                 layout2.addView(sensorView);
                             }else{
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         }else{
                             layout.addView(sensorView);
                         }
-                        
+                        */
                         System.out.println(layout.getHeight());
                         sensorView.setTag(config.id);
                         ((Sensor) sensorView).updateData();
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 }
             }
         }
-
+/*
         for(int i = 0; i<layout.getChildCount();i++) {
             final View v = layout.getChildAt(i);
             if (v instanceof GraphNumberSensorView){
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     }
                 });
             }
-        }
+        }*/
     }
 
 

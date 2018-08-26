@@ -92,7 +92,11 @@ public class AlarmMinFullSensorNumberSensorView extends AlarmNumberSensorView {
     @Override
     public void setConfig(Config config) {
         super.setConfig(config);
-
+        if (config.alarmWrite){
+            minEditValueView.setVisibility(VISIBLE);
+        }else{
+            minEditValueView.setVisibility(GONE);
+        }
 
     }
 

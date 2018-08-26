@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:id="@+id/editvalueLayout">
@@ -25,8 +27,8 @@
         android:id="@+id/editvalueValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="25dp"
-        android:textAlignment="center"
+        android:textSize="18dp"
+        android:gravity="center_vertical|center_horizontal"
         android:layout_gravity="center_vertical"
         android:layout_weight="0.3"
         app:numberview_multiLine="false"/>

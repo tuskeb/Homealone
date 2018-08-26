@@ -142,7 +142,13 @@ public class AlarmMinMaxSensorNumberSensorView extends AlarmNumberSensorView {
     @Override
     public void setConfig(Config config) {
         super.setConfig(config);
-
+        if (config.alarmWrite){
+            minEditValueView.setVisibility(VISIBLE);
+            maxEditValueView.setVisibility(VISIBLE);
+        }else{
+            minEditValueView.setVisibility(GONE);
+            maxEditValueView.setVisibility(GONE);
+        }
     }
 
 
@@ -153,11 +159,7 @@ public class AlarmMinMaxSensorNumberSensorView extends AlarmNumberSensorView {
         OnValueChangedListener onValueChangedListenerMax = maxEditValueView.getOnValueChangedListener();
         minEditValueView.setOnValueChangedListener(null);
         maxEditValueView.setOnValueChangedListener(null);
-/*
-        setAlarmMaxValue(this.data.getSettingsAlarmMaxValue());
-        setAlarmMinValue(this.data.getSettingsAlarmMinValue());
-        setAlarmMaxValue(this.data.getSettingsAlarmMaxValue());
-*/
+
         setAlarmMaxValue(this.config.alarmMaxValue);
         setAlarmMinValue(this.config.alarmMinValue);
         setAlarmMaxValue(this.config.alarmMaxValue);

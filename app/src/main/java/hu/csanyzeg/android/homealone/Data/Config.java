@@ -44,7 +44,7 @@ public class Config implements Serializable {
     public Double alarmMaxValue = null;//alarm
     public String alarmSwitch = null;//alarm
     public String alarmText = "";//alarm
-    public boolean alarmWrite = true;
+    public boolean alarmWrite = false;
     public String alarmComment = null;//alarm
     public String alarmComment2 = null;//alarm
     public Integer precision = 0;

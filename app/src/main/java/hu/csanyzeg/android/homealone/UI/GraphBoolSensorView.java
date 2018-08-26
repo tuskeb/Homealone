@@ -93,6 +93,7 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
 
     public void setValue(Boolean value){
         boolIndicatorView.setValue(value);
+        valueView.setValue(value);
     }
 
     public BoolGraphView getGraphView() {

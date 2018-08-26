@@ -40,6 +40,8 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
     protected Canvas canvas;
     protected float fontSize;
     protected float padding;
+    protected int verticalDivision = 4;
+    protected int horizontalDivision = 1;
 
     protected String horizontal = "t";
     protected String unit = "NA";
@@ -56,6 +58,14 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         return fontSize * (1.0f + (float)size * 0.3f);
     }
 
+    public void setVerticalDivision(int verticalDivision) {
+        this.verticalDivision = verticalDivision;
+    }
+
+    public void setHorizontalDivision(int horizontalDivision) {
+        this.horizontalDivision = horizontalDivision;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         this.canvas = canvas;
@@ -64,7 +74,7 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         }
         super.onDraw(canvas);
         refreshSizeValues(canvas);
-        createCoordinateSystem(4,1);
+        createCoordinateSystem(verticalDivision,horizontalDivision);
         if (entryList.size()>0 && entryList.get(0).size()>0) {
             onDrawVerticalLines(canvas);
             onDrawHorizontalLines(canvas);
@@ -80,9 +90,9 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
             pxms = getPxPerMs();
             pxunit = getPxPerUnit();
 
-            padding = (float) w / 80f;
+            padding = Math.max((float) w / 80f, (float) h / 60f);
 
-            fontSize = Math.min((float) w / 30f, (float) h / 20f);
+            fontSize = Math.max((float) w / 40f, (float) h / 30f);
         }
     }
 
@@ -160,13 +170,21 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
             String simpleDateFormat3 = (new SimpleDateFormat("HH:mm")).format(entries.date);
             //System.out.println(((entries.date.getTime() - timeMin) * pxms));
             float x = (int) ((entries.date.getTime() - timeMin) * pxms);
+            float y = h-padding;
+
+            /*
             float y = h + (int) (this.min * pxunit) - 2 - padding;
+
+
             if(y>h){
                 y=h;
             }
+
             if (y<(int) ((double) txtPaint.getTextSize() * 3 * 1.2)){
                 y = (int) ((double) txtPaint.getTextSize() * 3 * 1.2);
             }
+            */
+
             canvas.drawLine((int) ((entries.date.getTime() - timeMin) * pxms) + 1, 0, (int) ((entries.date.getTime() - timeMin) * pxms) + 1, h, txtPaint);
             txtPaint.setAlpha(200);
             drawStringOnCanvas(simpleDateFormat1,(int)x - (int)txtPaint.measureText(simpleDateFormat1) / 2,(int)y - (int) ((double) txtPaint.getTextSize() * 2 * 1.2), txtPaint, canvas);
@@ -236,19 +254,14 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         }
 
         HorizontalGraphLine h;
-        horizontalGraphLineList.add(h = new HorizontalGraphLine(0.0, 0x7f000000));
+        horizontalGraphLineList.add(h = new HorizontalGraphLine(0.0, 0xff000000));
         hCoordLines.add(h);
 
-        for (int i = 0; i <= vdiv; i++) {
+        for (int i = 0; i < vdiv; i++) {
             VerticalGrahLine v;
-            verticalGraphLineList.add(v = new VerticalGrahLine(timeMin + (timeInterval / (long)vdiv)*(long)i, 0x7f000000));
+            verticalGraphLineList.add(v = new VerticalGrahLine(timeMin + (timeInterval / ((long)(vdiv - 1)))*(long)i, 0xff000000));
             vCoordLines.add(v);
         }
-    }
-
-
-    public void reDraw(){
-        invalidate();
     }
 
     @Override
