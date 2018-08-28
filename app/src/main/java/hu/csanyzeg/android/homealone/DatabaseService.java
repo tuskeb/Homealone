@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Path;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -530,8 +529,8 @@ public class DatabaseService extends IntentService {
 
     private void updateSettings(){
 
-        notificationEnabled = readPref.getBoolean(Options.OPTION_NOTIFICATION_ENABLE, Options.DEFAULT_NOTIFICATION_ENABLE);
-        serverURL = readPref.getString(Options.OPTION_SERVER_URL, Options.DEFAULT_SERVER_URL);
+        notificationEnabled = readPref.getBoolean(Options.OPTION_NOTIFICATION_ENABLE, Options.OPTION_NOTIFICATION_ENABLE_DEFAULT);
+        serverURL = readPref.getString(Options.OPTION_SERVER_URL, Options.OPTION_SERVER_URL_DEFAULT);
 
     }
 

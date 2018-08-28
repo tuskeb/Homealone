@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="hu.csanyzeg.android.homealone.OptionsActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Szerver URL (például: http://szerver.hu:1234)" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/server_options"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:tooltipText="http://szerver.hu:1234" />
+
+        <Button
+            android:id="@+id/options_random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Random" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Felhasználónév" />
+
+    <EditText
+        android:id="@+id/server_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:tooltipText="http://szerver.hu:1234" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jelszó" />
+
+    <EditText
+        android:id="@+id/server_userpassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:tooltipText="http://szerver.hu:1234" />
+
+
+    <CheckBox
+        android:id="@+id/options_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Engedélyezem, hogy az értesítési sávon megjelenjenek a riasztások." />
+
+    <Button
+        android:id="@+id/options_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Jelenlegi értékek visszaállítása" />
+
+    <Button
+        android:id="@+id/options_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Alapértelmezett értékek visszaállítása" />
+
+</LinearLayout>

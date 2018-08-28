@@ -7,10 +7,17 @@ package hu.csanyzeg.android.homealone.Data;
 public class Options {
     public static final String PREFERENCES_ID = "pref";
     public static final String OPTION_NOTIFICATION_ENABLE = "notificationEnable";
-    public static final boolean DEFAULT_NOTIFICATION_ENABLE = true;
-    public static final String OPTION_SERVER_URL = "serverUrl";
-    public static final String DEFAULT_SERVER_URL = "http://zwl.strangled.net:9002";
+    public static final boolean OPTION_NOTIFICATION_ENABLE_DEFAULT = true;
 
+    public static final String OPTION_SERVER_URL = "serverUrl";
+    public static final String OPTION_SERVER_URL_DEFAULT = "http://zwl.strangled.net:9002";
+
+    public static final String OPTION_USER_NAME = "userName";
+    public static final String OPTION_USER_NAME_DEFAULT = "admin";
+
+
+    public static final String OPTION_USER_PASSWORD = "userPassword";
+    public static final String OPTION_USER_PASSWORD_DEFAULT = "AD654321MIN";
 
 
     public static final int BR_UPDATE_SETTINGS = 1;

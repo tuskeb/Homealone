@@ -45,7 +45,7 @@
         </receiver>
 
         <activity android:name=".GraphActivity" />
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".OptionsActivity"></activity>
     </application>
 
 </manifest>

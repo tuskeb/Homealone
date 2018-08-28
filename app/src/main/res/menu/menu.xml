@@ -4,6 +4,9 @@
         android:id="@+id/options_menu"
         android:title="Beállítások"/>
     <item
+        android:id="@+id/about_menu"
+        android:title="Névjegy"/>
+    <item
         android:id="@+id/exit_menu"
         android:title="Kilépés"/>
 </menu>
