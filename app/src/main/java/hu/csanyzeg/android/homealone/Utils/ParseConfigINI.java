@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringBufferInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -34,6 +35,10 @@ abstract public class ParseConfigINI {
     public ParseConfigINI(int resourceID, Context context) {
         this.inputStream = context.getResources().openRawResource(resourceID);
 
+    }
+
+    public ParseConfigINI(String ini) {
+        this.inputStream = new StringBufferInputStream(ini);
     }
 
     abstract protected void onFileOpenError(FileNotFoundException e);

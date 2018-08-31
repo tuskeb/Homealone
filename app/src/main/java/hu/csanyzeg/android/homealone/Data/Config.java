@@ -20,7 +20,7 @@ public class Config implements Serializable {
     public static Double gpsLatitude = null;
     public static Double gpsLongitude = null;
     public static String gpscomment = null;
-    public static Boolean admin = false;
+    public static boolean admin = false;
 
 
     public Integer color = null;

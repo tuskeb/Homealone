@@ -36,19 +36,36 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private LinearLayout noconnection;
 
 
+    private void setConnectingProgressView(boolean b){
+        if (b){
+            //if (noconnection.getVisibility()!=View.VISIBLE) {
+                noconnection.setVisibility(View.VISIBLE);
+                alarmTV.setVisibility(View.GONE);
+                rpiTimeTV.setVisibility(View.GONE);
+                distanceTV.setVisibility(View.GONE);
+            //}
+        }else{
+            //if (noconnection.getVisibility()!=View.GONE) {
+                noconnection.setVisibility(View.GONE);
+                alarmTV.setVisibility(View.VISIBLE);
+                rpiTimeTV.setVisibility(View.VISIBLE);
+                distanceTV.setVisibility(View.VISIBLE);
+            //}
+        }
+    }
+
+
     private BroadcastReceiver databaseBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-
+                System.out.println("Broadcast receiver message: " + bundle.getInt(DatabaseService.BR_MESSAGE));
                 switch (bundle.getInt(DatabaseService.BR_MESSAGE)){
                     case DatabaseService.BR_DATA_UPDATE:
                         //System.out.println(databaseService.getDataHashMap());
                         int hash = bundle.getInt(DatabaseService.BR_OBJECT_HASH);
-                        if (noconnection.getVisibility()!=View.GONE) {
-                            noconnection.setVisibility(View.GONE);
-                        }
+                        setConnectingProgressView(false);
                         for(Sensor f : sensors) {
                             if (null != f.getData().get(bundle.getString(DatabaseService.BR_DATA_ID))) {
                                 f.updateData();
@@ -57,11 +74,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         break;
                     case DatabaseService.BR_CONFIG_UPDATE:
                         //databaseService.getDataHashMap();
-                        if (databaseService != null) {
+                        if (databaseService != null && databaseService.getConfigs()!=null) {
+                            setConnectingProgressView(false);
                             refreshUI(databaseService.getDataHashMap(), databaseService.getConfigs());
-                            if (noconnection.getVisibility()!=View.GONE) {
-                                noconnection.setVisibility(View.GONE);
-                            }
                         }
                         break;
                     case DatabaseService.BR_LOCATION_CHANGE:
@@ -84,13 +99,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         }
                     break;
                     case DatabaseService.BR_DOWNLOAD_FAILED:
-                        if (noconnection.getVisibility()!=View.VISIBLE) {
-                            noconnection.setVisibility(View.VISIBLE);
-                        }
+                        setConnectingProgressView(true);
                         break;
-/*                    case DatabaseService.BR_RPI_TIME_UPDATE:
-
-                       break;*/
+                    case DatabaseService.BR_DOWNLOAD_COMPLETE:
+                        setConnectingProgressView(false);
+                        break;
+                    case DatabaseService.BR_RPI_TIME_UPDATE:
+                       break;
                 }
             }
         }
@@ -145,9 +160,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
         }, 980);
 
+        setConnectingProgressView(true);
+
         Intent i= new Intent(getApplicationContext(), DatabaseService.class);
         startService(i);
-
     }
 
     public void refreshUI(HashMap<String, Data> dataHashMap, ArrayList<Config> configs){
@@ -157,21 +173,23 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         if (layout2!= null) {
             layout2.removeAllViews();
         }
-        for (Config config : configs) {
-            if (config.isEnabled()) {
-                if (layout.findViewWithTag(config.id)==null) {
-                    View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id, databaseService);
-                    if (sensorView != null) {
-                        sensors.add((Sensor) sensorView);
-                        if (layout2!=null && sensors.size()%2==0){
-                            layout2.addView(sensorView);
-                        }else{
-                            layout.addView(sensorView);
-                        }
-                        System.out.println(layout.getHeight());
-                        sensorView.setTag(config.id);
-                        ((Sensor) sensorView).updateData();
+        if (configs != null) {
+            for (Config config : configs) {
+                if (config.isEnabled()) {
+                    if (layout.findViewWithTag(config.id) == null) {
+                        View sensorView = (View) FullSensorViewInflater.inflate(this, dataHashMap, config.id, databaseService);
+                        if (sensorView != null) {
+                            sensors.add((Sensor) sensorView);
+                            if (layout2 != null && sensors.size() % 2 == 0) {
+                                layout2.addView(sensorView);
+                            } else {
+                                layout.addView(sensorView);
+                            }
+                            System.out.println(layout.getHeight());
+                            sensorView.setTag(config.id);
+                            ((Sensor) sensorView).updateData();
 
+                        }
                     }
                 }
             }

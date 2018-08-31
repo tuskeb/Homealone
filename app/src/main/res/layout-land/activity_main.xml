@@ -47,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textColor="#ffa73322"
-                android:text="Nincs kapcsolat a szerverrel."/>
+                android:text="@string/connecting"/>
+
         </LinearLayout>
 
         <LinearLayout

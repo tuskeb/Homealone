@@ -5,4 +5,5 @@
     <string name="locationdistance">Légvonalban mért távolság otthonról:</string>
     <string name="hometime">Otthoni idő:</string>
     <string name="hometimenotfound">Otthoni idő: Nem elérhető.</string>
+    <string name="connecting">"Kapcsolódás a szerverhez..."</string>
 </resources>

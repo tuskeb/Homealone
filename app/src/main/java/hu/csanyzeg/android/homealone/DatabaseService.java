@@ -10,6 +10,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -72,6 +73,8 @@ public class DatabaseService extends IntentService {
 
     private String serverURL;
     private boolean notificationEnabled;
+    private String userName;
+    private String userPassword;
     private SharedPreferences readPref;
 
     public String getServerURL() {
@@ -300,15 +303,17 @@ public class DatabaseService extends IntentService {
                 if (sensorRecords.size() > 0) {
                     setRpiLastCurrentDataDate(new Date(sensorRecords.get(0).ts.getTime() - getDownloadTimeMs() / 2));
                     generateRpiTimeUpdateNotification();
+
+                    for (Data d : dataHashMap.values()) {
+                        d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+                    }
+
+                    getDownloadTimeMs();
+
+                    generateDownloadCompleteNotification();
+                }else{
+                    generateDownloadFailedNotification();
                 }
-
-                for (Data d : dataHashMap.values()) {
-                    d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
-                }
-
-                getDownloadTimeMs();
-                generateDownloadCompleteNotification();
-
 
             }
         }.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
@@ -443,50 +448,57 @@ public class DatabaseService extends IntentService {
 
 
         ArrayList<SensorRecord> sensorRecords = randomAllSensorRecordByDate(Calendar.getInstance().getTime());
+        if (sensorRecords != null || sensorRecords.size()>0) {
+            setRpiLastCurrentDataDate(new Date(sensorRecords.get(0).ts.getTime()));
+            generateRpiTimeUpdateNotification();
 
-        setRpiLastCurrentDataDate(new Date(sensorRecords.get(0).ts.getTime()));
-        generateRpiTimeUpdateNotification();
-
-        for (Data d : dataHashMap.values()) {
-            d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+            for (Data d : dataHashMap.values()) {
+                d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
+            }
+            System.out.println(sensorRecords);
         }
-        System.out.println(sensorRecords);
-
         refreshInProgress = false;
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         while (true) {
-            if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
-                System.out.println("Refresh need");
-                if (!serverURL.equals("random")) {
-                    updateFromHTTP();
-                }else {
-                    updateFromRandom();
+            if (configs == null || configs.size() == 0) {
+                if (!readConfigInProgress) {
+                    readConfig();
                 }
-            }
+            } else {
+                if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
+                    System.out.println("Refresh need");
+                    if (!serverURL.equals("random")) {
+                        updateFromHTTP();
+                    } else {
+                        updateFromRandom();
+                    }
+                }
             /*System.out.println(refreshInProgress);
             System.out.println("RPI: " + getRpiCurrentDate());
             System.out.println("And: " + Calendar.getInstance().getTime());*/
-            //System.out.println(dataHashMap.size());
-            //generateAlarmNotification();
-            StringBuilder stringBuilder = new StringBuilder();
-            if (!isLocationEnabled()) {
-                stringBuilder.append("A helyadatok nem hozzáférhetők!");
-                stringBuilder.append("\n");
-            }
-            for (Data d : dataHashMap.values()) {
-                if (d.isAlarm()) {
-                    stringBuilder.append(d.getAlarmText());
+                //System.out.println(dataHashMap.size());
+                //generateAlarmNotification();
+                StringBuilder stringBuilder = new StringBuilder();
+                if (!isLocationEnabled()) {
+                    stringBuilder.append("A helyadatok nem hozzáférhetők!");
                     stringBuilder.append("\n");
-                    generateAlarmBroadcastNotification(d);
                 }
-            }
-            if (stringBuilder.length() > 0) {
-                generateAlarmNotification(alarmText = stringBuilder.toString());
-            } else {
-                alarmText = null;
+                for (Data d : dataHashMap.values()) {
+                    if (d.isAlarm()) {
+                        stringBuilder.append(d.getAlarmText());
+                        stringBuilder.append("\n");
+                        generateAlarmBroadcastNotification(d);
+                    }
+                }
+                if (stringBuilder.length() > 0) {
+                    generateAlarmNotification(alarmText = stringBuilder.toString());
+                } else {
+                    alarmText = null;
+                }
+
             }
 
             try {
@@ -531,29 +543,13 @@ public class DatabaseService extends IntentService {
 
         notificationEnabled = readPref.getBoolean(Options.OPTION_NOTIFICATION_ENABLE, Options.OPTION_NOTIFICATION_ENABLE_DEFAULT);
         serverURL = readPref.getString(Options.OPTION_SERVER_URL, Options.OPTION_SERVER_URL_DEFAULT);
+        userName = readPref.getString(Options.OPTION_USER_NAME, Options.OPTION_USER_NAME_DEFAULT);
+        userPassword = readPref.getString(Options.OPTION_USER_PASSWORD, Options.OPTION_USER_PASSWORD_DEFAULT);
 
     }
 
-    private void readConfig(){
 
-        if (configs!= null) {
-            configs.clear();
-        }
-        dataHashMap.clear();
-
-        ParseConfigINI parseConfigINI = new ParseConfigINI(R.raw.ini_homealone_metadata, this) {
-            @Override
-            protected void onFileOpenError(FileNotFoundException e) {
-                Log.e("Open", e.getMessage());
-            }
-        };
-
-
-        //ArrayList<Config> configs = parseConfigINI.parse();
-
-        configs = parseConfigINI.parse();
-        System.out.println(configs);
-
+    private void createData(){
 
         for (Config c : configs) {
             if (c.isEnabled()) {
@@ -603,8 +599,76 @@ public class DatabaseService extends IntentService {
                 c.setAlarmSwitch(dataHashMap.get(c.getConfig().alarmSwitch));
             }
         }
+        System.out.println("-------------------" + Config.getDataStoreIntervalMs());
+        locationHome.setLatitude(Config.gpsLatitude);
+        locationHome.setLongitude(Config.gpsLongitude);
+    }
 
-        generateConfigUpdateNotification();
+    private boolean readConfigInProgress = false;
+
+    private void readConfig(){
+        readConfigInProgress = true;
+        System.out.println("ReadConfig - --------------------------------");
+        System.out.println(serverURL);
+        HashMap<String, String> get = new HashMap<>();
+        get.put("format", "ini");
+        get.put("user", userName);
+        get.put("passwd", userPassword);
+
+
+        if (serverURL.equals("random")){
+            if (configs != null) {
+                configs.clear();
+            }
+            dataHashMap.clear();
+
+            ParseConfigINI parseConfigINI = new ParseConfigINI(R.raw.ini_homealone_metadata, DatabaseService.this) {
+                @Override
+                protected void onFileOpenError(FileNotFoundException e) {
+                    Log.e("Open", e.getMessage());
+                }
+            };
+
+            configs = parseConfigINI.parse();
+            System.out.println(configs);
+            createData();
+            generateConfigUpdateNotification();
+            readConfigInProgress = false;
+        } else {
+            HttpDownloadUtil configHttpDownloadUtil = new HttpDownloadUtil() {
+                @Override
+                public void onDownloadStart() {
+                    if (configs != null) {
+                        configs.clear();
+                    }
+                    dataHashMap.clear();
+                    //generateConfigUpdateNotification();
+                }
+
+                @Override
+                public void onDownloadComplete(StringBuilder stringBuilder) {
+                    if (stringBuilder == null) {
+                        generateDownloadFailedNotification();
+                        readConfigInProgress = false;
+                        return;
+                    }
+                    ParseConfigINI parseConfigINI = new ParseConfigINI(stringBuilder.toString()) {
+                        @Override
+                        protected void onFileOpenError(FileNotFoundException e) {
+                            Log.e("Open", e.getMessage());
+                        }
+                    };
+
+                    configs = parseConfigINI.parse();
+                    System.out.println(configs);
+                    createData();
+                    generateConfigUpdateNotification();
+                    readConfigInProgress = false;
+                }
+
+            };
+            configHttpDownloadUtil.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+        }
     }
 
     @Override
@@ -628,7 +692,7 @@ public class DatabaseService extends IntentService {
         };
 */
         updateSettings();
-        readConfig();
+        //readConfig();
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -667,8 +731,7 @@ public class DatabaseService extends IntentService {
 
         locationLastLocation = locationManager.getLastKnownLocation(locationProvider);
         locationHome = new Location(locationProvider);
-        locationHome.setLatitude(Config.gpsLatitude);
-        locationHome.setLongitude(Config.gpsLongitude);
+
 
 
         // Initialize the location fields

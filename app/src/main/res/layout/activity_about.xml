@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="hu.csanyzeg.android.homealone.AboutActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arduino Team"
+        style="@style/H2"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Könye Attila"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tanulók: "
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Raspberry PI Team"
+        style="@style/H2"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Szabolcs Szilárd"
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tanulók: "
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arduino Team"
+        style="@style/H2"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Tüske Balázs"
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tanulók: "
+        style="@style/P"
+        />
+</LinearLayout>
