@@ -46,7 +46,7 @@ abstract public class NumberData extends Data<Double> {
                 }
             }
         }
-        System.out.println(graphEntries.size() + " "  + config.display);
+        //System.out.println(graphEntries.size() + " "  + config.display);
         Collections.sort(graphEntries);
     }
 

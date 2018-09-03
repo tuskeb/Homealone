@@ -73,7 +73,7 @@ public abstract class HttpDownloadUtil {
             try {
 
                 url = new URL(info.url + "/?" + HttpMapUtil.mapToString(info.getValues));
-                System.out.println("GET: " +url.toString());
+                //System.out.println("GET: " +url.toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(info.connectionTimeout);
                 urlConnection.setReadTimeout(info.readTimeout);
@@ -90,19 +90,19 @@ public abstract class HttpDownloadUtil {
                 }
 
                 if (info.method == Method.POST) {
-                    System.out.printf(" POST values start");
+                    //System.out.printf(" POST values start");
                     OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
                     writer.write(HttpMapUtil.mapToString(info.postValues));
                     writer.flush();
-                    System.out.printf(" POST values end");
+                    //System.out.printf(" POST values end");
                 }
 
-                System.out.println(" Waiting");
+                //System.out.println(" Waiting");
                 long start = System.currentTimeMillis();
 
                 InputStreamReader reader = new InputStreamReader(urlConnection.getInputStream());
                 long end = System.currentTimeMillis();
-                System.out.println(" Response " + (end - start) + " ms");
+                //System.out.println(" Response " + (end - start) + " ms");
 
                 int data;
                 data = reader.read();
@@ -111,7 +111,7 @@ public abstract class HttpDownloadUtil {
                     data = reader.read();
                     stringBuilder.append(current);
                 }
-                System.out.println(" End HTTP connection");
+                //System.out.println(" End HTTP connection");
             } catch (Exception e) {
                 err = true;
                 if (e.getMessage() == null) {

@@ -92,11 +92,11 @@ public class DatabaseService extends IntentService {
 
                 switch (bundle.getInt(Options.BR_MESSAGE)) {
                     case Options.BR_UPDATE_SETTINGS:
-                        System.out.println("---------------------- Update Settings --------------");
+                        //System.out.println("---------------------- Update Settings --------------");
                         String s = serverURL;
                         updateSettings();
                         if (!s.equals(serverURL)) {
-                            System.out.println("---------------------- Read Config --------------");
+                            //System.out.println("---------------------- Read Config --------------");
                             readConfig();
                         }
                         break;
@@ -236,7 +236,7 @@ public class DatabaseService extends IntentService {
                 }
                 startDataTime = new Date(sdt);
             } else {
-                System.out.println("Force update all data  --------");
+                //System.out.println("Force update all data  --------");
                 startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
                     @Override
                     public int compare(Data data, Data t1) {
@@ -246,8 +246,8 @@ public class DatabaseService extends IntentService {
                 }).getFromDate();
             }
 
-            System.out.println("Download startDataTime " + startDataTime);
-            System.out.println("Download stopDataTime " + stopDataTime);
+            //System.out.println("Download startDataTime " + startDataTime);
+            //System.out.println("Download stopDataTime " + stopDataTime);
             SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
 
             if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
@@ -259,7 +259,7 @@ public class DatabaseService extends IntentService {
                 new HttpDownloadUtil() {
                     @Override
                     public void onDownloadStart() {
-                        System.out.println("Start downloading history...");
+                        //System.out.println("Start downloading history...");
                     }
 
                     @Override
@@ -286,7 +286,7 @@ public class DatabaseService extends IntentService {
         new HttpDownloadUtil() {
             @Override
             public void onDownloadStart() {
-                System.out.println("Start downloading current data...");
+                //System.out.println("Start downloading current data...");
                 androidLastCurrentDataDate = Calendar.getInstance().getTime();
             }
 
@@ -411,7 +411,7 @@ public class DatabaseService extends IntentService {
                 }
                 startDataTime = new Date(sdt);
             } else {
-                System.out.println("Force update all data  --------");
+                //System.out.println("Force update all data  --------");
                 startDataTime = Collections.min(dataHashMap.values(), new Comparator<Data>() {
                     @Override
                     public int compare(Data data, Data t1) {
@@ -421,19 +421,19 @@ public class DatabaseService extends IntentService {
                 }).getFromDate();
             }
 
-            System.out.println("Download startDataTime " + startDataTime);
-            System.out.println("Download stopDataTime " + stopDataTime);
+            //System.out.println("Download startDataTime " + startDataTime);
+            //System.out.println("Download stopDataTime " + stopDataTime);
             SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
 
             if (forceDownloadAllData || startDataTime.getTime() < stopDataTime.getTime() - Config.polling * 1500) {
                 forceDownloadAllData = false;
-                System.out.println("Start random history...");
+                //System.out.println("Start random history...");
                 ArrayList<SensorRecord> sensorRecords = new ArrayList<>();
 
                 for(int i = 0; i<100; i++){
                     sensorRecords.add(randomSensorRecordField());
                 };
-                System.out.println(sensorRecords);
+                //System.out.println(sensorRecords);
                 for (Data d : dataHashMap.values()) {
                     d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
                 }
@@ -443,7 +443,7 @@ public class DatabaseService extends IntentService {
 
         //Aktuális adatok letöltése
 
-        System.out.println("Start random current data...");
+        //System.out.println("Start random current data...");
         androidLastCurrentDataDate = Calendar.getInstance().getTime();
 
 
@@ -455,7 +455,7 @@ public class DatabaseService extends IntentService {
             for (Data d : dataHashMap.values()) {
                 d.updateFromSensorRecords(sensorRecords, getRpiCurrentDate());
             }
-            System.out.println(sensorRecords);
+            //System.out.println(sensorRecords);
         }
         refreshInProgress = false;
     }
@@ -469,7 +469,7 @@ public class DatabaseService extends IntentService {
                 }
             } else {
                 if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
-                    System.out.println("Refresh need");
+                    //System.out.println("Refresh need");
                     if (!serverURL.equals("random")) {
                         updateFromHTTP();
                     } else {
@@ -599,7 +599,7 @@ public class DatabaseService extends IntentService {
                 c.setAlarmSwitch(dataHashMap.get(c.getConfig().alarmSwitch));
             }
         }
-        System.out.println("-------------------" + Config.getDataStoreIntervalMs());
+        //System.out.println("-------------------" + Config.getDataStoreIntervalMs());
         locationHome.setLatitude(Config.gpsLatitude);
         locationHome.setLongitude(Config.gpsLongitude);
     }
@@ -608,8 +608,8 @@ public class DatabaseService extends IntentService {
 
     private void readConfig(){
         readConfigInProgress = true;
-        System.out.println("ReadConfig - --------------------------------");
-        System.out.println(serverURL);
+        //System.out.println("ReadConfig - --------------------------------");
+        //System.out.println(serverURL);
         HashMap<String, String> get = new HashMap<>();
         get.put("format", "ini");
         get.put("user", userName);
@@ -630,7 +630,7 @@ public class DatabaseService extends IntentService {
             };
 
             configs = parseConfigINI.parse();
-            System.out.println(configs);
+            //System.out.println(configs);
             createData();
             generateConfigUpdateNotification();
             readConfigInProgress = false;
@@ -660,7 +660,7 @@ public class DatabaseService extends IntentService {
                     };
 
                     configs = parseConfigINI.parse();
-                    System.out.println(configs);
+                    //System.out.println(configs);
                     createData();
                     generateConfigUpdateNotification();
                     readConfigInProgress = false;
@@ -705,12 +705,14 @@ public class DatabaseService extends IntentService {
                 locationLastLocation = location;
                 Data.GPSDistanceInMeter = getDistanceFromHomeInMeters();
                 generateLocationChangeNotification();
+                /*
                 System.out.println("Location changed");
                 System.out.println(" New Longitude: " + location.getLongitude());
                 System.out.println(" New Latitude: " + location.getLatitude());
                 System.out.println(" Config Longitude: " + Config.gpsLongitude);
                 System.out.println(" Config Latitude: " + Config.gpsLatitude);
                 System.out.println(" Distance: " + String.format("%.2f km", location.distanceTo(locationHome) / 1000));
+                */
             }
 
             @Override
@@ -720,12 +722,12 @@ public class DatabaseService extends IntentService {
 
             @Override
             public void onProviderEnabled(String s) {
-                System.out.println("Enabled new provider " + locationProvider);
+                //System.out.println("Enabled new provider " + locationProvider);
             }
 
             @Override
             public void onProviderDisabled(String s) {
-                System.out.println("Disabled provider " + locationProvider);
+                //System.out.println("Disabled provider " + locationProvider);
             }
         });
 
@@ -736,10 +738,10 @@ public class DatabaseService extends IntentService {
 
         // Initialize the location fields
         if (locationLastLocation != null) {
-            System.out.println("Provider " + locationProvider + " has been selected.");
+            //System.out.println("Provider " + locationProvider + " has been selected.");
             locationListener.onLocationChanged(locationLastLocation);
         } else {
-            System.out.println("Location not available");
+            //System.out.println("Location not available");
         }
     }
 

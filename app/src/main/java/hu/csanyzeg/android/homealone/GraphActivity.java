@@ -71,7 +71,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
 
         }
         timeInterval = value;
-        System.out.println(timeIntervalMs);
+        //System.out.println(timeIntervalMs);
         seekBar.setProgress(value);
     }
 
@@ -207,8 +207,8 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
             for (final NumberData n : numberDataArrayList) {
                 Date startDataTime = n.getFromDate();
                 Date stopDataTime = n.getToDate();
-                System.out.println("Download startDataTime " + startDataTime);
-                System.out.println("Download stopDataTime " + stopDataTime);
+                //System.out.println("Download startDataTime " + startDataTime);
+                //System.out.println("Download stopDataTime " + stopDataTime);
                 SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
 
                 HashMap<String, String> get = new HashMap<>();
@@ -219,7 +219,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                     @Override
                     public void onDownloadStart() {
                         progressCount++;
-                        System.out.println("Start downloading history...");
+                        //System.out.println("Start downloading history...");
                     }
 
                     @Override
@@ -265,13 +265,13 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
         databaseService = b.getService();
         refreshUI();
         refreshData();
-        System.out.println("Az adatbázis szolgáltatáshoz csatlakozott");
+        //System.out.println("Az adatbázis szolgáltatáshoz csatlakozott");
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
         databaseService = null;
-        System.out.println("Az adatbázis szolgáltatással a kapcsolat megszakadt.");
+        //System.out.println("Az adatbázis szolgáltatással a kapcsolat megszakadt.");
     }
 
 

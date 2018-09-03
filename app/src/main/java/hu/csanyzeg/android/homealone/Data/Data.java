@@ -262,7 +262,7 @@ abstract public class Data<T> {
         }catch (NoSuchElementException e) {
             maxDate = null;
         }
-        System.out.println(graphEntries);
+        //System.out.println(graphEntries);
     }
 
 
@@ -324,7 +324,7 @@ abstract public class Data<T> {
         /*if (this.fastPollingRemainCount==0 && fastPollingRemainCount>0){
             lastUpdateDate = now;
         }*/
-        System.out.println(" Set Fast polling !!!!!!!!!!!!!!!");
+        //System.out.println(" Set Fast polling !!!!!!!!!!!!!!!");
         this.fastPollingRemainCount = fastPollingRemainCount;
     }
 

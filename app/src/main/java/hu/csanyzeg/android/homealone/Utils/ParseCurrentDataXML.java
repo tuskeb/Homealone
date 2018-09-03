@@ -26,8 +26,8 @@ public class ParseCurrentDataXML {
 
     public static ArrayList<SensorRecord> parse(String xml){
         ArrayList<SensorRecord> sensorRecords = new ArrayList<>();
-        System.out.println("Parse Current XML");
-        System.out.println(xml);
+        //System.out.println("Parse Current XML");
+        //System.out.println(xml);
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -78,10 +78,10 @@ public class ParseCurrentDataXML {
                 }
             }
         } catch (Exception e) {e.printStackTrace();}
-        System.out.println(" Data count: " + sensorRecords.size());
+        //System.out.println(" Data count: " + sensorRecords.size());
 
         //System.out.println(configs.size());
-        System.out.println(sensorRecords);
+        //System.out.println(sensorRecords);
         return sensorRecords;
     }
 

@@ -38,7 +38,7 @@ public class ParseHistoryDataXML {
 
     public static ArrayList<SensorRecord> parse(String xml){
         ArrayList<SensorRecord> sensorRecords = new ArrayList<>();
-        System.out.println("Parse Hisroty Data XML");
+        //System.out.println("Parse Hisroty Data XML");
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -80,9 +80,9 @@ public class ParseHistoryDataXML {
                 }
             }
         } catch (Exception e) {e.printStackTrace();}
-        System.out.println(" Data count: " + sensorRecords.size());
+        //System.out.println(" Data count: " + sensorRecords.size());
 
-        System.out.println(sensorRecords);
+        //System.out.println(sensorRecords);
         return sensorRecords;
     }
 }

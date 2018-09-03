@@ -33,7 +33,7 @@ public abstract class BoolData extends Data<Boolean> {
                 }
             }
         }
-        System.out.println(graphEntries.size() + " "  + config.display);
+        //System.out.println(graphEntries.size() + " "  + config.display);
         Collections.sort(graphEntries);
     }
 

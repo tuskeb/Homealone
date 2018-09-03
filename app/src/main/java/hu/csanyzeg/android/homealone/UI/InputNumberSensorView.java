@@ -58,7 +58,7 @@ public class InputNumberSensorView extends GraphNumberSensorView {
     public void init() {
         super.init();
         inputValueView = getRootView().findViewById(R.id.inputNumberView);
-        System.out.println("---------------------------------------------");
+        //System.out.println("---------------------------------------------");
         inputValueView.setOnValueChangedListener(valueChangeListener);
     }
 

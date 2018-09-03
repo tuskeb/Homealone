@@ -48,7 +48,7 @@ public class FullSensorViewInflater {
                         new HttpDownloadUtil() {
                             @Override
                             public void onDownloadStart() {
-                                System.out.println(" Send " + config.id + " value " + value);
+                                //System.out.println(" Send " + config.id + " value " + value);
                             }
 
                             @Override
@@ -101,7 +101,7 @@ public class FullSensorViewInflater {
                             new HttpDownloadUtil() {
                                 @Override
                                 public void onDownloadStart() {
-                                    System.out.println(" Send " + config.id + " true ");
+                                    //System.out.println(" Send " + config.id + " true ");
                                 }
 
                                 @Override
@@ -126,7 +126,7 @@ public class FullSensorViewInflater {
                             new HttpDownloadUtil() {
                                 @Override
                                 public void onDownloadStart() {
-                                    System.out.println(" Send " + config.id + " false ");
+                                    //System.out.println(" Send " + config.id + " false ");
                                 }
 
                                 @Override
@@ -155,9 +155,9 @@ public class FullSensorViewInflater {
             }
             sensorView.setConfig(config);
             if (config.isSensor()) {
-                System.out.println(sensorView);
-                System.out.println(sensorView.getData());
-                System.out.printf(data.toString());
+                //System.out.println(sensorView);
+                //System.out.println(sensorView.getData());
+                //System.out.printf(data.toString());
                 sensorView.getData().put(config.id, data);
             }
 
