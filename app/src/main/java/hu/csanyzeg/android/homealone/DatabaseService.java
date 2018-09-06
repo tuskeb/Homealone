@@ -674,7 +674,6 @@ public class DatabaseService extends IntentService {
                             Log.e("Open", e.getMessage());
                         }
                     };
-
                     configs = parseConfigINI.parse();
                     //System.out.println(configs);
                     createData();

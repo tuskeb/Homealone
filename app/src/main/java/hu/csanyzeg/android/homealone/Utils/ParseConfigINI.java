@@ -44,6 +44,7 @@ abstract public class ParseConfigINI {
     abstract protected void onFileOpenError(FileNotFoundException e);
     
     public ArrayList<Config> parse(){
+
         ArrayList<Config> configs = new ArrayList<Config>();
         System.out.println("Parse INI");
         System.out.println(Config.class.getFields().length);

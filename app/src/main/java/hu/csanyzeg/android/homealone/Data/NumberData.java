@@ -23,14 +23,19 @@ abstract public class NumberData extends Data<Double> {
     @Override
     synchronized
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
+        for (SensorRecord s : sensorRecords) {
+            if (s.field.equals(config.id)) {
+                Entry<Double> e;
+                graphEntries.add(e = new Entry<Double>(s.value, s.ts));
+            }
+        }
+        /*
         if (getFromDate() == null || getToDate() == null){
             for (SensorRecord s : sensorRecords) {
                 if (s.field.equals(config.id)) {
                     Entry<Double> e;
                     graphEntries.add(e = new Entry<Double>(s.value, s.ts));
-                    /*if (s.value>=config.min && s.value<=config.max) {
-                        e.value = null;
-                    }*/
+
                 }
             }
         }else {
@@ -40,12 +45,11 @@ abstract public class NumberData extends Data<Double> {
                 if (s.field.equals(config.id) && from <= s.ts.getTime() && to >= s.ts.getTime()) {
                     Entry<Double> e;
                     graphEntries.add(e = new Entry<Double>(s.value, s.ts));
-                    /*if (s.value>=config.min && s.value<=config.max) {
-                        e.value = null;
-                    }*/
+
                 }
             }
         }
+        */
         //System.out.println(graphEntries.size() + " "  + config.display);
         Collections.sort(graphEntries);
     }

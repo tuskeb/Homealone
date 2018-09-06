@@ -18,7 +18,12 @@ public abstract class BoolData extends Data<Boolean> {
     @Override
     synchronized
     protected void getDataFromSensorRecords(ArrayList<SensorRecord> sensorRecords) {
-        if (getFromDate() == null || getToDate() == null){
+        for (SensorRecord s : sensorRecords) {
+            if (s.field.equals(config.id)) {
+                graphEntries.add(new Entry<Boolean>(s.value != 0, s.ts));
+            }
+        }
+        /*if (getFromDate() == null || getToDate() == null){
             for (SensorRecord s : sensorRecords) {
                 if (s.field.equals(config.id)) {
                     graphEntries.add(new Entry<Boolean>(s.value != 0, s.ts));
@@ -32,7 +37,7 @@ public abstract class BoolData extends Data<Boolean> {
                     graphEntries.add(new Entry<Boolean>(s.value != 0, s.ts));
                 }
             }
-        }
+        }*/
         //System.out.println(graphEntries.size() + " "  + config.display);
         Collections.sort(graphEntries);
     }

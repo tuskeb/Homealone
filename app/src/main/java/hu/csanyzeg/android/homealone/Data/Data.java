@@ -202,16 +202,6 @@ abstract public class Data<T> {
             lastRemoved = e;
         }
 
-/*
-        if (lastRemoved!= null) {
-
-        }else{
-            if (graphEntries.size()>=1){
-                Entry<T> next = graphEntries.get(0);
-                lastRemoved =  new Entry<T>(next.value, getLastUpdateFromDate(), next.color);
-            }
-        }
-*/
         if (lastRemoved!=null){
             graphEntries.add(lastRemoved);
             Collections.sort(graphEntries);
@@ -245,7 +235,15 @@ abstract public class Data<T> {
             graphEntries.remove(e);
         }
 
-
+        if (graphEntries.size()>0) {
+            Entry<T> last = Collections.max(graphEntries);
+            if (last.date.getTime() < lastUpdateToDate.getTime()) {
+                Entry<T> fs = last.clone();
+                fs.date = lastUpdateToDate;
+                graphEntries.add(fs);
+                //System.out.println(fs);
+            }
+        }
         //Színezés
         for (Entry<T> e : graphEntries)  {
             e.color = color;
@@ -262,7 +260,8 @@ abstract public class Data<T> {
         }catch (NoSuchElementException e) {
             maxDate = null;
         }
-        //System.out.println(graphEntries);
+        //if (getConfig().id.equals("XC")) System.out.println(graphEntries);
+
     }
 
 

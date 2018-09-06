@@ -8,10 +8,15 @@ import java.util.Date;
  * Created by tanulo on 2018. 07. 05..
  */
 
-public class Entry<T> implements Comparable<Entry> {
+public class Entry<T> implements Comparable<Entry>, Cloneable {
         public T value = null;
         public Date date = new Date();
         public int color = 0xff000000;
+
+        @Override
+        protected Entry<T> clone() {
+                return new Entry<T>(value, date, color);
+        }
 
         public Entry(T value, Date date) {
                 this.value = value;

@@ -33,7 +33,8 @@ import hu.csanyzeg.android.homealone.Data.SensorRecord;
 public class ParseHistoryDataXML {
 
     public static SimpleDateFormat getDateParser(){
-        return new SimpleDateFormat("y'-'M'-'d' 'H':'m':'s'.'S");
+        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        //return new SimpleDateFormat("y'-'M'-'d' 'H':'m':'s");
     }
 
     public static ArrayList<SensorRecord> parse(String xml){
@@ -49,19 +50,28 @@ public class ParseHistoryDataXML {
             element.normalize();
             NodeList root = doc.getChildNodes().item(0).getChildNodes();
             for (int i = 0; i < root.getLength(); i++) {
+                System.out.println(root.item(i).getNodeName());
                 if (root.item(i).getNodeName().equals("#text")) {
                     continue;
                 }
                 if (root.item(i).getNodeName().equals("data") || root.item(i).getNodeName().equals("startdata") || root.item(i).getNodeName().equals("stopdata")) {
                     NodeList data = root.item(i).getChildNodes();
                     for (int s = 0; s < data.getLength(); s++) {
-                        SensorRecord c = new SensorRecord();
                         //String txt = data.item(s).getTextContent().trim().replace("\"", "");
-                        c.ts = new Date(Long.parseLong(data.item(s).getAttributes().getNamedItem("TS").getTextContent(), 16)*1000);
-                        c.field = data.item(s).getNodeName();
-                        c.value = Double.parseDouble(data.item(s).getTextContent().trim().replace("\"", ""));
-                        c.id = 0;
-                        sensorRecords.add(c);
+                        //System.out.println(data.item(s).getTextContent());
+//                        System.out.println(data.item(s).getNodeName());
+                        if (data.item(s).getNodeName().equals("#text")) {
+                            continue;
+                        }
+                        if (data.item(s).getAttributes()!=null) {
+                            SensorRecord c = new SensorRecord();
+                            c.ts = new Date(Long.parseLong(data.item(s).getAttributes().getNamedItem("TS").getTextContent(), 16) * 1000);
+                            c.field = data.item(s).getNodeName();
+                            c.value = Double.parseDouble(data.item(s).getTextContent().trim().replace("\"", ""));
+                            c.id = 0;
+                            sensorRecords.add(c);
+//                            System.out.println(c);
+                        }
                     }
                 }
             }

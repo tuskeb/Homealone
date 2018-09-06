@@ -73,7 +73,7 @@ public abstract class HttpDownloadUtil {
             try {
 
                 url = new URL(info.url + "/?" + HttpMapUtil.mapToString(info.getValues));
-                //System.out.println("GET: " +url.toString());
+                System.out.println("GET: " +url.toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(info.connectionTimeout);
                 urlConnection.setReadTimeout(info.readTimeout);
