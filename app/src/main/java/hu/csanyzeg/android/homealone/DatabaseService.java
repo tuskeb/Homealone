@@ -81,6 +81,9 @@ public class DatabaseService extends IntentService {
         return serverURL;
     }
 
+    public boolean isRandomData(){
+        return serverURL.equals("random");
+    }
     //private ArrayList<Config> configs = null;
     //public static final String CONFIGS = "configs";
 
@@ -254,6 +257,7 @@ public class DatabaseService extends IntentService {
                 forceDownloadAllData = false;
                 HashMap<String, String> get = new HashMap<>();
                 get.put("format", "xml");
+                get.put("full", "1");
                 get.put("start", simpleDateFormat.format(startDataTime));
                 get.put("stop", simpleDateFormat.format(stopDataTime));
                 new HttpDownloadUtil() {
@@ -335,6 +339,18 @@ public class DatabaseService extends IntentService {
             sensorRecord.value = (double)((random.nextInt((int)((r.max - r.min) * 100))) + r.min)/100;
         }
         sensorRecord.field = r.id;
+        sensorRecord.ts = new Date(random.nextLong() % (d.getToDate().getTime() - d.getFromDate().getTime()) + d.getFromDate().getTime());
+        return sensorRecord;
+    }
+
+    public SensorRecord randomSensorRecordField(Data d){
+        SensorRecord sensorRecord = new SensorRecord();
+        if (d.getConfig().isSwitch()){
+            sensorRecord.value = (double)random.nextInt(2);
+        }else{
+            sensorRecord.value = (double)((random.nextInt((int)((d.getConfig().max - d.getConfig().min) * 100))) + d.getConfig().min)/100;
+        }
+        sensorRecord.field = d.getConfig().id;
         sensorRecord.ts = new Date(random.nextLong() % (d.getToDate().getTime() - d.getFromDate().getTime()) + d.getFromDate().getTime());
         return sensorRecord;
     }
@@ -470,7 +486,7 @@ public class DatabaseService extends IntentService {
             } else {
                 if (!refreshInProgress && (isRefreshNeed() || forceDownloadAllData)) {
                     //System.out.println("Refresh need");
-                    if (!serverURL.equals("random")) {
+                    if (!isRandomData()) {
                         updateFromHTTP();
                     } else {
                         updateFromRandom();
@@ -616,7 +632,7 @@ public class DatabaseService extends IntentService {
         get.put("passwd", userPassword);
 
 
-        if (serverURL.equals("random")){
+        if (isRandomData()){
             if (configs != null) {
                 configs.clear();
             }

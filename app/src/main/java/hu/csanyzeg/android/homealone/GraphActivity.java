@@ -49,30 +49,34 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
         switch (value){
             case 0:
                 timeIntervalMs = 60L*60L*1000L;
-                textView.setText("Utolsó óra");
+                textView.setText("Óra");
                 break;
             case 1:
-                timeIntervalMs = 24L*60L*60L*1000L;
-                textView.setText("Utolsó nap");
+                timeIntervalMs = 3L*60L*60L*1000L;
+                textView.setText("3 óra");
                 break;
             case 2:
-                timeIntervalMs = 7L*24L*60L*60L*1000L;
-                textView.setText("Utolsó hét");
+                timeIntervalMs = 6L*60L*60L*1000L;
+                textView.setText("6 Óra");
                 break;
             case 3:
-                timeIntervalMs = 31L*24L*60L*60L*1000L;
-
-                textView.setText("Utolsó hónap");
+                timeIntervalMs = 12L*60L*60L*1000L;
+                textView.setText("12 Óra");
                 break;
             case 4:
-                timeIntervalMs = 365L*24L*60L*60L*1000L;
-                textView.setText("Utolsó év");
-            break;
-
+                timeIntervalMs = 24L*60L*60L*1000L;
+                textView.setText("Nap");
+                break;
+            case 5:
+                timeIntervalMs = 7L*24L*60L*60L*1000L;
+                textView.setText("Hét");
+                break;
         }
         timeInterval = value;
         //System.out.println(timeIntervalMs);
         seekBar.setProgress(value);
+        numberGraphView.setTimeMax(Calendar.getInstance().getTimeInMillis());
+        numberGraphView.setTimeMin(Calendar.getInstance().getTimeInMillis() - timeIntervalMs);
     }
 
     public int getTimeInterval() {
@@ -91,9 +95,9 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
-        seekBar = findViewById(R.id.agSB);
+        seekBar = findViewById(R.id.agIntervaLengthSB);
         numberGraphView = findViewById(R.id.agG);
-        textView = findViewById(R.id.agTV);
+        textView = findViewById(R.id.agIntervaLengthTV);
         progressBar = findViewById(R.id.agPR);
 
         setTimeInterval(1);
@@ -207,39 +211,59 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
             for (final NumberData n : numberDataArrayList) {
                 Date startDataTime = n.getFromDate();
                 Date stopDataTime = n.getToDate();
-                //System.out.println("Download startDataTime " + startDataTime);
-                //System.out.println("Download stopDataTime " + stopDataTime);
-                SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
 
-                HashMap<String, String> get = new HashMap<>();
-                get.put("format", "xml");
-                get.put("start", simpleDateFormat.format(startDataTime));
-                get.put("stop", simpleDateFormat.format(stopDataTime));
-                new HttpDownloadUtil() {
-                    @Override
-                    public void onDownloadStart() {
-                        progressCount++;
-                        //System.out.println("Start downloading history...");
-                    }
+                if (!databaseService.isRandomData()) {
+                    //System.out.println("Download startDataTime " + startDataTime);
+                    //System.out.println("Download stopDataTime " + stopDataTime);
+                    SimpleDateFormat simpleDateFormat = ParseHistoryDataXML.getDateParser();
 
-                    @Override
-                    public void onDownloadComplete(StringBuilder stringBuilder) {
-                        progressCount--;
-                        if (stringBuilder == null) {
-                            return;
+                    HashMap<String, String> get = new HashMap<>();
+                    get.put("format", "xml");
+                    get.put("field", n.getConfig().id);
+                    get.put("full", "1");
+                    get.put("start", simpleDateFormat.format(startDataTime));
+                    get.put("stop", simpleDateFormat.format(stopDataTime));
+
+                    new HttpDownloadUtil() {
+                        @Override
+                        public void onDownloadStart() {
+                            progressCount++;
+                            //System.out.println("Start downloading history...");
                         }
-                        ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
-                        //System.out.println(sensorRecords);
-                        n.updateFromSensorRecords(sensorRecords, databaseService.getRpiCurrentDate());
-                        NamedArrayList<Entry> asd = databaseService.getDataHashMap().get(n.getConfig().id).getGraphEntries();
-                        n.getGraphEntries().add((Entry)asd.get(asd.size()-1));
-                        //generateDownloadCompleteNotification();
-                        if (progressCount==0) {
-                            setProgress(false);
-                            numberGraphView.invalidate();
+
+                        @Override
+                        public void onDownloadComplete(StringBuilder stringBuilder) {
+                            progressCount--;
+                            if (stringBuilder == null) {
+                                return;
+                            }
+                            n.getGraphEntries().clear();
+                            ArrayList<SensorRecord> sensorRecords = ParseHistoryDataXML.parse(stringBuilder.toString());
+                            //System.out.println(sensorRecords);
+                            n.updateFromSensorRecords(sensorRecords, databaseService.getRpiCurrentDate());
+                            NamedArrayList<Entry> asd = databaseService.getDataHashMap().get(n.getConfig().id).getGraphEntries();
+                            n.getGraphEntries().add((Entry) asd.get(asd.size() - 1));
+                            //generateDownloadCompleteNotification();
+                            if (progressCount == 0) {
+                                setProgress(false);
+                                numberGraphView.invalidate();
+                            }
                         }
+                    }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.POST, get, get));
+                } else {
+                    ArrayList<SensorRecord> sensorRecords = new ArrayList<>();
+                    for (int i = 0; i < 100; i++) {
+                        sensorRecords.add(databaseService.randomSensorRecordField(n));
                     }
-                }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.POST, get, get));
+                    n.getGraphEntries().clear();
+                    n.updateFromSensorRecords(sensorRecords, Calendar.getInstance().getTime());
+                    NamedArrayList<Entry> asd = databaseService.getDataHashMap().get(n.getConfig().id).getGraphEntries();
+                    n.getGraphEntries().add((Entry) asd.get(asd.size() - 1));
+                    if (progressCount == 0) {
+                        setProgress(false);
+                        numberGraphView.invalidate();
+                     }
+                }
             }
             //n.updateFromRandom(databaseService.getRpiCurrentDate());
         }
@@ -265,13 +289,13 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
         databaseService = b.getService();
         refreshUI();
         refreshData();
-        //System.out.println("Az adatbázis szolgáltatáshoz csatlakozott");
+        System.out.println("Az adatbázis szolgáltatáshoz csatlakozott");
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
         databaseService = null;
-        //System.out.println("Az adatbázis szolgáltatással a kapcsolat megszakadt.");
+        System.out.println("Az adatbázis szolgáltatással a kapcsolat megszakadt.");
     }
 
 

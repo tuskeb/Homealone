@@ -208,6 +208,7 @@ public class GraphListFragment extends SensorViewFragment {
     }
 
     @Override
+    synchronized 
     public void refreshUI(HashMap<String, Data> dataHashMap, ArrayList<Config> configs){
         if (layout!= null) {
             layout.removeAllViews();
