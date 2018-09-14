@@ -72,6 +72,11 @@ public class Config implements Serializable {
     public static boolean admin = false;
 
 
+    /**
+     * Megadja a legkorábbi bejegyzés időpontjának időbélyegét.
+     */
+    public static long timeMin = 1528376608000L;
+
 
 
 

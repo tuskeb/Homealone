@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.Entry;
@@ -27,56 +28,59 @@ import hu.csanyzeg.android.homealone.Data.NamedArrayList;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.Data.OnDataUpdateListener;
 import hu.csanyzeg.android.homealone.Data.SensorRecord;
+import hu.csanyzeg.android.homealone.UI.GraphView;
 import hu.csanyzeg.android.homealone.UI.NumberGraphView;
 import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 import hu.csanyzeg.android.homealone.Utils.ParseHistoryDataXML;
 
 public class GraphActivity extends AppCompatActivity implements ServiceConnection {
 
-    TextView textView;
-    NumberGraphView numberGraphView;
-    SeekBar seekBar;
+    TextView intervalTextView;
+    GraphView graphView;
+    SeekBar intervalSeekBar;
     RelativeLayout progressBar;
-    int progressCount = 0;
+    SeekBar timeSeekBar;
+    TextView timeTextView;
+    protected int progressCount = 0;
 
-    private int timeInterval;
-    private long timeIntervalMs;
-    private ArrayList<NumberData> numberDataArrayList = new ArrayList<>();
-    private Config config = null;
-    private DatabaseService databaseService = null;
+    protected int timeInterval;
+    protected long timeIntervalMs;
+    protected ArrayList<Data> numberDataArrayList = new ArrayList<>();
+    protected Config config = null;
+    protected DatabaseService databaseService = null;
+    protected long startGraphTime;
 
     protected void setTimeInterval(int value){
         switch (value){
             case 0:
                 timeIntervalMs = 60L*60L*1000L;
-                textView.setText("Óra");
+                intervalTextView.setText("Óra");
                 break;
             case 1:
                 timeIntervalMs = 3L*60L*60L*1000L;
-                textView.setText("3 óra");
+                intervalTextView.setText("3 óra");
                 break;
             case 2:
                 timeIntervalMs = 6L*60L*60L*1000L;
-                textView.setText("6 Óra");
+                intervalTextView.setText("6 Óra");
                 break;
             case 3:
                 timeIntervalMs = 12L*60L*60L*1000L;
-                textView.setText("12 Óra");
+                intervalTextView.setText("12 Óra");
                 break;
             case 4:
                 timeIntervalMs = 24L*60L*60L*1000L;
-                textView.setText("Nap");
+                intervalTextView.setText("Nap");
                 break;
             case 5:
                 timeIntervalMs = 7L*24L*60L*60L*1000L;
-                textView.setText("Hét");
+                intervalTextView.setText("Hét");
                 break;
         }
         timeInterval = value;
         //System.out.println(timeIntervalMs);
-        seekBar.setProgress(value);
-        numberGraphView.setTimeMax(Calendar.getInstance().getTimeInMillis());
-        numberGraphView.setTimeMin(Calendar.getInstance().getTimeInMillis() - timeIntervalMs);
+        intervalSeekBar.setProgress(value);
+
     }
 
     public int getTimeInterval() {
@@ -95,14 +99,17 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
-        seekBar = findViewById(R.id.agIntervaLengthSB);
-        numberGraphView = findViewById(R.id.agG);
-        textView = findViewById(R.id.agIntervaLengthTV);
+        intervalSeekBar = findViewById(R.id.agIntervaLengthSB);
+
+        intervalTextView = findViewById(R.id.agIntervaLengthTV);
         progressBar = findViewById(R.id.agPR);
+        timeSeekBar = findViewById(R.id.agIntervalSB);
+        timeTextView = findViewById(R.id.agIntervalTV);
+
 
         setTimeInterval(1);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        intervalSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 
@@ -119,9 +126,34 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                 refreshData();
             }
         });
+
+        timeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                updateStartGraphTime();
+                timeTextView.setText(new SimpleDateFormat("yyyy.MM.dd HH:mm").format(new Date(startGraphTime)));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                refreshData();
+            }
+        });
+    }
+
+
+    protected void updateStartGraphTime(){
+        long end = databaseService.getRpiCurrentDate().getTime() - timeIntervalMs;
+        startGraphTime = Config.timeMin + (long)((double)(end - Config.timeMin) * (double)timeSeekBar.getProgress() / (double)timeSeekBar.getMax());
     }
 
     public void refreshUI() {
+
         ArrayList<Config> configs = databaseService.getConfigs();
         numberDataArrayList.clear();
 
@@ -132,61 +164,94 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                 if (cfg.id.equals(iid)) {
                     config = cfg;
                 }
+                final Data data;
+                if (cfg.isSwitch()){
+                    data = new BoolData(cfg) {
+                        @Override
+                        public Date getFromDate() {
+                            if (databaseService.getRpiCurrentDate() == null) return null;
+                            return new Date(startGraphTime);
 
-                final NumberData numberData = new NumberData(cfg) {
-                    @Override
-                    public Date getFromDate() {
-                        if (databaseService.getRpiCurrentDate() == null) return null;
-                        return new Date(databaseService.getRpiCurrentDate().getTime() - getTimeIntervalMs());
+                        }
 
-                    }
+                        @Override
+                        public Date getToDate() {
+                            if (databaseService.getRpiCurrentDate() == null) return null;
+                            return new Date(startGraphTime  + getTimeIntervalMs());
+                        }
+                    };
+                }else{
+                    data = new NumberData(cfg) {
+                        @Override
+                        public Date getFromDate() {
+                            if (databaseService.getRpiCurrentDate() == null) return null;
+                            return new Date(startGraphTime);
 
-                    @Override
-                    public Date getToDate() {
-                        if (databaseService.getRpiCurrentDate() == null) return null;
-                        return new Date(databaseService.getRpiCurrentDate().getTime());
-                    }
-                };
+                        }
+
+                        @Override
+                        public Date getToDate() {
+                            if (databaseService.getRpiCurrentDate() == null) return null;
+                            return new Date(startGraphTime  + getTimeIntervalMs());
+                        }
+                    };
+                }
 
 
-                numberData.setOnDataUpdateListener(new OnDataUpdateListener() {
+
+                data.setOnDataUpdateListener(new OnDataUpdateListener() {
                     @Override
                     public void onBeginUpdate(Data data) {
-                        //numberGraphView.getEntryList().remove(data.getGraphEntries());
+                        //graphView.getEntryList().remove(data.getGraphEntries());
                     }
 
                     @Override
                     public void onEndUpdate(Data data) {
 
-                        //numberGraphView.getEntryList().add(data.getGraphEntries());
-                        //numberGraphView.invalidate();
+                        //graphView.getEntryList().add(data.getGraphEntries());
+                        //graphView.invalidate();
                     }
                 });
                 if (cfg.isSensor()) {
-                    numberDataArrayList.add(numberData);
+                    numberDataArrayList.add(data);
                 }
-
             }
         }
-
+        if (numberDataArrayList.get(0).getConfig().isSwitch()){
+            graphView = findViewById(R.id.agBoolGraph);
+        }else{
+            graphView = findViewById(R.id.agNumberGraph);
+        }
 
         //System.out.println(config);
         setTitle(config.display);
 
-        numberGraphView.setBackgroundColor(Color.WHITE);
-        numberGraphView.setMax(config.max);
-        numberGraphView.setMin(config.min);
-        numberGraphView.invalidate();
-        numberGraphView.setDecimal(config.precision);
-        numberGraphView.setUnit(config.suffix);
-        numberGraphView.getEntryList().clear();
-        for (NumberData n : numberDataArrayList) {
-            numberGraphView.getEntryList().add(n.getGraphEntries());
+        graphView.setBackgroundColor(Color.WHITE);
+        graphView.invalidate();
+        if (graphView instanceof NumberGraphView) {
+            ((NumberGraphView) graphView).setDecimal(config.precision);
+            graphView.setMax(config.max);
+            graphView.setMin(config.min);
+            graphView.setUnit(config.suffix);
+        }
+
+        graphView.getEntryList().clear();
+        for (Data n : numberDataArrayList) {
+            graphView.getEntryList().add(n.getGraphEntries());
+
         }
         //System.out.println(numberData.getGraphEntries().size());
     }
+
+
     public void refreshData() {
         setProgress(true);
+        updateStartGraphTime();
+        timeTextView.setText(new SimpleDateFormat("yyyy.MM.dd HH:mm").format(new Date(startGraphTime)));
+        graphView.setTimeMax(startGraphTime+timeIntervalMs);
+        graphView.setTimeMin(startGraphTime);
+        //timeTextView.setText(new Date(Config.timeMin).toString() + " - " + new Date(databaseService.getRpiCurrentDate().getTime() - timeIntervalMs));
+
 
         if (databaseService.getRpiCurrentDate() == null) {
             AsyncTask asyncTask = new AsyncTask() {
@@ -208,7 +273,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
             }.execute();
         }
         else {
-            for (final NumberData n : numberDataArrayList) {
+            for (final Data n : numberDataArrayList) {
                 Date startDataTime = n.getFromDate();
                 Date stopDataTime = n.getToDate();
 
@@ -246,7 +311,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                             //generateDownloadCompleteNotification();
                             if (progressCount == 0) {
                                 setProgress(false);
-                                numberGraphView.invalidate();
+                                graphView.invalidate();
                             }
                         }
                     }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.POST, get, get));
@@ -261,7 +326,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
                     n.getGraphEntries().add((Entry) asd.get(asd.size() - 1));
                     if (progressCount == 0) {
                         setProgress(false);
-                        numberGraphView.invalidate();
+                        graphView.invalidate();
                      }
                 }
             }
@@ -271,15 +336,15 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
 
     public void setProgress(boolean b){
         if (b){
-            numberGraphView.setAlpha(0.2f);
-            numberGraphView.setVisibility(View.GONE);
+            graphView.setAlpha(0.2f);
+            graphView.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         }else
         {
 
             progressBar.setVisibility(View.GONE);
-            numberGraphView.setVisibility(View.VISIBLE);
-            numberGraphView.setAlpha(1f);
+            graphView.setVisibility(View.VISIBLE);
+            graphView.setAlpha(1f);
         }
     }
 
@@ -287,6 +352,8 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
     public void onServiceConnected(ComponentName name, IBinder binder) {
         DatabaseService.MyBinder b = (DatabaseService.MyBinder) binder;
         databaseService = b.getService();
+        graphView = findViewById(R.id.agNumberGraph);
+        updateStartGraphTime();
         refreshUI();
         refreshData();
         System.out.println("Az adatbázis szolgáltatáshoz csatlakozott");

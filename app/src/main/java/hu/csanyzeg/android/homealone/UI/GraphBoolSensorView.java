@@ -1,15 +1,19 @@
 package hu.csanyzeg.android.homealone.UI;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
+import hu.csanyzeg.android.homealone.DatabaseService;
+import hu.csanyzeg.android.homealone.GraphActivity;
 import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.InitableUI;
 import hu.csanyzeg.android.homealone.R;
@@ -89,6 +93,15 @@ public class GraphBoolSensorView extends RelativeLayout implements InitableUI, B
         displayView = getRootView().findViewById(R.id.txt);
         graphView = getRootView().findViewById(R.id.graph);
         boolIndicatorView = getRootView().findViewById(R.id.boolindicator);
+
+        graphView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), GraphActivity.class);
+                intent.putExtra(DatabaseService.BR_DATA_ID, config.id);
+                getContext().startActivity(intent);
+            }
+        });
     }
 
     public void setValue(Boolean value){

@@ -200,7 +200,6 @@ public class GraphNumberSensorView extends RelativeLayout implements InitableUI,
         graphView.getEntryList().clear();
         for (NumberData numberData: data.values()) {
             graphView.getEntryList().add(numberData.getGraphEntries());
-
         }
         if (graphView.getEntryList().size()>0) {
             try {

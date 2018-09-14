@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -22,39 +23,40 @@ import java.util.ArrayList;
  */
 
 abstract public class ParseConfigINI {
-    InputStream inputStream;
 
-    public ParseConfigINI(File file) {
+    public static ArrayList<Config> parse(Context ctx, int resId) {
+        InputStream inputStream = ctx.getResources().openRawResource(resId);
+
+        InputStreamReader inputreader = new InputStreamReader(inputStream);
+        BufferedReader buffreader = new BufferedReader(inputreader);
+        String line;
+        StringBuilder text = new StringBuilder();
+
         try {
-            this.inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            onFileOpenError(e);
+            while (( line = buffreader.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+        } catch (IOException e) {
+            return null;
         }
+        return parse(text.toString());
     }
 
-    public ParseConfigINI(int resourceID, Context context) {
-        this.inputStream = context.getResources().openRawResource(resourceID);
 
-    }
-
-    public ParseConfigINI(String ini) {
-        this.inputStream = new StringBufferInputStream(ini);
-    }
-
-    abstract protected void onFileOpenError(FileNotFoundException e);
-    
-    public ArrayList<Config> parse(){
+    public static ArrayList<Config> parse(String ini){
 
         ArrayList<Config> configs = new ArrayList<Config>();
         System.out.println("Parse INI");
-        System.out.println(Config.class.getFields().length);
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String[] strings = ini.split("\n");
         Config config = null;
         String section ="";
         try {
-            while (bufferedReader.ready()){
-                String[] l = bufferedReader.readLine().trim().split("=");
+            for (String b : strings){
+                if (b.trim().equals("")){
+                    continue;
+                }
+                String[] l = b.trim().split("=");
                 String[] line = new String[l.length];
                 for(int i=0; i<l.length; i++){
                     line[i] = l[i].trim().replace("\"","");
@@ -136,9 +138,6 @@ abstract public class ParseConfigINI {
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

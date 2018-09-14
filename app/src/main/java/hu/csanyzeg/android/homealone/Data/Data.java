@@ -204,7 +204,7 @@ abstract public class Data<T> {
 
         if (lastRemoved!=null){
             graphEntries.add(lastRemoved);
-            Collections.sort(graphEntries);
+
         }
 
         //Idő ismétlődések eltávolítása
@@ -244,6 +244,7 @@ abstract public class Data<T> {
                 //System.out.println(fs);
             }
         }
+        Collections.sort(graphEntries);
         //Színezés
         for (Entry<T> e : graphEntries)  {
             e.color = color;

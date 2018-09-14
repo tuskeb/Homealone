@@ -638,14 +638,7 @@ public class DatabaseService extends IntentService {
             }
             dataHashMap.clear();
 
-            ParseConfigINI parseConfigINI = new ParseConfigINI(R.raw.ini_homealone_metadata, DatabaseService.this) {
-                @Override
-                protected void onFileOpenError(FileNotFoundException e) {
-                    Log.e("Open", e.getMessage());
-                }
-            };
-
-            configs = parseConfigINI.parse();
+            configs = ParseConfigINI.parse(getBaseContext(),R.raw.ini_homealone_metadata);
             //System.out.println(configs);
             createData();
             generateConfigUpdateNotification();
@@ -668,13 +661,8 @@ public class DatabaseService extends IntentService {
                         readConfigInProgress = false;
                         return;
                     }
-                    ParseConfigINI parseConfigINI = new ParseConfigINI(stringBuilder.toString()) {
-                        @Override
-                        protected void onFileOpenError(FileNotFoundException e) {
-                            Log.e("Open", e.getMessage());
-                        }
-                    };
-                    configs = parseConfigINI.parse();
+
+                    configs = ParseConfigINI.parse(stringBuilder.toString());
                     //System.out.println(configs);
                     createData();
                     generateConfigUpdateNotification();
