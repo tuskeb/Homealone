@@ -16,7 +16,7 @@ import java.util.Random;
 abstract public class Data<T> {
     public static double GPSDistanceInMeter = 0;
     public static final long NO_UPDATE_NEED = -1;
-    public static final int[] COLORS = {0xffff00ff, 0xff00ff00, 0xff0000ff, 0xffff0000};
+    public static final int[] COLORS = {0xff873600 , 0xff5b2c6f , 0xff2980b9, 0xffc0000d, 0xff2c7404, 0xffdf9b04, 0xff038455, 0xff84032d};
     private static int colorCounter = 0;
 
     protected Config config;

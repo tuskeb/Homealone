@@ -10,7 +10,7 @@ public class Options {
     public static final boolean OPTION_NOTIFICATION_ENABLE_DEFAULT = true;
 
     public static final String OPTION_SERVER_URL = "serverUrl";
-    public static final String OPTION_SERVER_URL_DEFAULT = "http://zwl.strangled.net:9002";
+    public static final String OPTION_SERVER_URL_DEFAULT = "http://193.224.143.135:9002";
 
     public static final String OPTION_USER_NAME = "userName";
     public static final String OPTION_USER_NAME_DEFAULT = "admin";

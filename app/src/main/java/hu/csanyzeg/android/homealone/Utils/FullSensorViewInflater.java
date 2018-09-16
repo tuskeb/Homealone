@@ -1,12 +1,17 @@
 package hu.csanyzeg.android.homealone.Utils;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Point;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import java.util.HashMap;
 
 import hu.csanyzeg.android.homealone.Data.AlarmEvent;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.DatabaseService;
+import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.Sensor;
 import hu.csanyzeg.android.homealone.UI.AlarmBoolSensorView;
 import hu.csanyzeg.android.homealone.UI.AlarmMaxSensorNumberSensorView;
@@ -25,7 +30,17 @@ import hu.csanyzeg.android.homealone.UI.SwitchFullBoolSensorView;
  */
 
 public class FullSensorViewInflater {
+    //public final static
+
+
     public static Sensor inflate(Context context, HashMap<String, Data> dataHashMap, String configID, final DatabaseService databaseService){
+        Point p = new Point();
+        WindowManager windowManager;
+        (windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
+        int orientation = context.getResources().getConfiguration().orientation;
+        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
+
+
         Sensor sensorView = null;
         final Data data = dataHashMap.get(configID);
         if (data == null){
@@ -168,6 +183,13 @@ public class FullSensorViewInflater {
                 sensorView.getData().put(c.getConfig().id, dataHashMap.get(c.getConfig().id));
             }
         }
+        LinearLayout.LayoutParams layoutParams = null;
+        if (sensorView instanceof BoolSensor) {
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height/2);
+        }else{
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+        }
+        ((LinearLayout)sensorView).setLayoutParams(layoutParams);
         return sensorView;
     }
 }

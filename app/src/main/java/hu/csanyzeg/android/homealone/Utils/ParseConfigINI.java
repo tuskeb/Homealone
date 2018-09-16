@@ -142,6 +142,7 @@ abstract public class ParseConfigINI {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+        System.out.println(Config.dataStoreInterval);
         return configs;
     }
 }

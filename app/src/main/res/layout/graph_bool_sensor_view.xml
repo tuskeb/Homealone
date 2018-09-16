@@ -1,12 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/graphNumberSensorViewLayout">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
 
         android:orientation="horizontal"
         android:id="@+id/sensorNameViewLayout">
@@ -17,6 +17,7 @@
             android:id="@+id/txt"
             android:paddingBottom="5dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:textSize="22dp"
             android:textStyle="italic"
             android:text="Label"
@@ -25,6 +26,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_weight="0.1"
+            android:paddingTop="15dp"
             android:layout_height="match_parent" />
         <hu.csanyzeg.android.homealone.UI.BoolView
             android:layout_width="0dp"
@@ -32,9 +34,10 @@
             android:paddingBottom="5dp"
             android:layout_weight="0.3"
             android:textStyle="italic"
+            android:paddingTop="15dp"
             android:layout_height="match_parent"
             android:gravity="right|bottom"
-            android:textSize="14dp"
+            android:textSize="22dp"
             android:id="@+id/value"
             app:numberview_multiLine="false"
             app:numberview_decimal="2"
@@ -44,7 +47,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:orientation="horizontal"
         >
 
@@ -58,7 +61,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
 
                 >
@@ -66,7 +69,7 @@
                     android:id="@+id/graph"
                     android:layout_width="0dp"
                     android:layout_weight=".7"
-                    android:layout_height="70dp"
+                    android:layout_height="match_parent"
                     android:background="#ffffffff"
                     android:layout_marginLeft="5dp"
 

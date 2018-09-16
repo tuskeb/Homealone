@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.SurfaceView;
 import android.view.View;
 
@@ -90,9 +91,10 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
             pxms = getPxPerMs();
             pxunit = getPxPerUnit();
 
-            padding = Math.max((float) w / 80f, (float) h / 60f);
-
-            fontSize = Math.max((float) w / 40f, (float) h / 30f);
+            //padding = Math.max((float) w / 80f, (float) h / 60f);
+            fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1.5f, getResources().getDisplayMetrics());
+            padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 0.5f, getResources().getDisplayMetrics());
+            //fontSize = Math.max((float) w / 40f, (float) h / 30f);
         }
     }
 
@@ -142,10 +144,12 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         for (HorizontalGraphLine entries : horizontalGraphLineList) {
             Paint txtPaint = new Paint();
             txtPaint.setAntiAlias(true);
-            txtPaint.setTextSize(getFontSize(0));
+            txtPaint.setTextSize(getFontSize(1));
             txtPaint.setColor(entries.color);
             float y = h + (int) ((this.min - entries.value) * pxunit) - 2;
+            txtPaint.setAlpha(txtPaint.getAlpha()/2);
             canvas.drawLine(0, y, w, y, txtPaint);
+            txtPaint.setColor(entries.color);
             if (entries.text!=null){
                 if (y-w/80<txtPaint.getTextSize()){
                     canvas.drawText(entries.text, padding,  y+txtPaint.getTextSize() + padding, txtPaint);
@@ -162,11 +166,14 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
         for (VerticalGrahLine entries : verticalGraphLineList) {
             Paint txtPaint = new Paint();
             txtPaint.setAntiAlias(true);
-            txtPaint.setTextSize(getFontSize(0));
+            txtPaint.setTextSize(getFontSize(1));
             txtPaint.setColor(entries.color);
-            txtPaint.setAlpha(64);
-            String simpleDateFormat1 = (new SimpleDateFormat("yyyy")).format(entries.date);
-            String simpleDateFormat2 = (new SimpleDateFormat("MMM dd")).format(entries.date);
+            txtPaint.setAlpha(txtPaint.getAlpha()/2);
+            //txtPaint.setAlpha(64);
+            //String simpleDateFormat1 = (new SimpleDateFormat("yyyy")).format(entries.date);
+            //String simpleDateFormat2 = (new SimpleDateFormat("MMM dd")).format(entries.date);
+            //String simpleDateFormat3 = (new SimpleDateFormat("HH:mm")).format(entries.date);
+            String simpleDateFormat2 = (new SimpleDateFormat("yy.MM.dd")).format(entries.date);
             String simpleDateFormat3 = (new SimpleDateFormat("HH:mm")).format(entries.date);
             //System.out.println(((entries.date.getTime() - timeMin) * pxms));
             float x = (int) ((entries.date.getTime() - timeMin) * pxms);
@@ -186,10 +193,13 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
             */
 
             canvas.drawLine((int) ((entries.date.getTime() - timeMin) * pxms) + 1, 0, (int) ((entries.date.getTime() - timeMin) * pxms) + 1, h, txtPaint);
-            txtPaint.setAlpha(200);
-            drawStringOnCanvas(simpleDateFormat1,(int)x - (int)txtPaint.measureText(simpleDateFormat1) / 2,(int)y - (int) ((double) txtPaint.getTextSize() * 2 * 1.2), txtPaint, canvas);
-            drawStringOnCanvas(simpleDateFormat2,(int)x - (int)txtPaint.measureText(simpleDateFormat2) / 2,(int)y - (int) ((double) txtPaint.getTextSize() * 1 * 1.2), txtPaint, canvas);
-            drawStringOnCanvas(simpleDateFormat3,(int)x - (int)txtPaint.measureText(simpleDateFormat3) / 2,(int)y , txtPaint, canvas);
+            //txtPaint.setAlpha(200);
+            //drawStringOnCanvas(simpleDateFormat1,(int)x - (int)txtPaint.measureText(simpleDateFormat1) / 2,(int)y - (int) ((double) txtPaint.getTextSize() * 2 * 1.2), txtPaint, canvas);
+            txtPaint.setColor(entries.color);
+            if (entries.date.getTime() != timeMin) {
+                drawStringOnCanvas(simpleDateFormat2, (int) x - (int) txtPaint.measureText(simpleDateFormat2) / 2, (int) y - (int) ((double) txtPaint.getTextSize() * 1 * 1.2), txtPaint, canvas);
+                drawStringOnCanvas(simpleDateFormat3, (int) x - (int) txtPaint.measureText(simpleDateFormat3) / 2, (int) y, txtPaint, canvas);
+            }
             /*canvas.drawText(simpleDateFormat1.format(entries.date), x, y - (int) ((double) txtPaint.getTextSize() * 2 * 1.2), txtPaint);
             canvas.drawText(simpleDateFormat2.format(entries.date), x, y - (int) ((double) txtPaint.getTextSize() * 1 * 1.2), txtPaint);
             canvas.drawText(simpleDateFormat3.format(entries.date), x, y, txtPaint);
@@ -259,7 +269,7 @@ public abstract class GraphView<T> extends SurfaceView  implements MinMax {
 
         for (int i = 0; i < vdiv; i++) {
             VerticalGrahLine v;
-            verticalGraphLineList.add(v = new VerticalGrahLine(timeMin + (timeInterval / ((long)(vdiv - 1)))*(long)i, 0xff000000));
+            verticalGraphLineList.add(v = new VerticalGrahLine(timeMin + (timeInterval / ((long)(vdiv - 1)))*(long)i, 0xaf000000));
             vCoordLines.add(v);
         }
     }

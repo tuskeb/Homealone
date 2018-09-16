@@ -23,6 +23,7 @@ public class NumberGraphView extends GraphView<Double> {
     protected int decimal = 1;
 
     protected String pattern = "#";
+    protected int nameDrawCount = 0;
 
     public NumberGraphView(Context context) {
         super(context);
@@ -92,115 +93,7 @@ public class NumberGraphView extends GraphView<Double> {
                     //}
                 }
                 //TODO: felkutatni a hiba okát:
-            /*
-            09-03 14:30:25.065 22384-22384/hu.csanyzeg.android.homelone E/AndroidRuntime: FATAL EXCEPTION: main
-                                                                              Process: hu.csanyzeg.android.homelone, PID: 22384
-                                                                              java.util.ConcurrentModificationException
-                                                                                  at java.util.ArrayList$Itr.next(ArrayList.java:831)
-                                                                                  at java.util.Collections.min(Collections.java:711)
-                                                                                  at hu.csanyzeg.android.homealone.UI.NumberGraphView.onDrawGraphEntry(NumberGraphView.java:93)
-                                                                                  at hu.csanyzeg.android.homealone.UI.GraphView.onDrawGraphEntries(GraphView.java:211)
-                                                                                  at hu.csanyzeg.android.homealone.UI.GraphView.onDraw(GraphView.java:81)
-                                                                                  at hu.csanyzeg.android.homealone.UI.NumberGraphView.onDraw(NumberGraphView.java:174)
-                                                                                  at android.view.View.draw(View.java:17185)
-                                                                                  at android.view.SurfaceView.draw(SurfaceView.java:349)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16167)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.draw(View.java:17188)
-                                                                                  at android.widget.ScrollView.draw(ScrollView.java:1722)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16167)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-09-03 14:30:25.066 22384-22384/hu.csanyzeg.android.homelone E/AndroidRuntime:     at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16162)
-                                                                                  at android.view.View.draw(View.java:16951)
-                                                                                  at android.view.ViewGroup.drawChild(ViewGroup.java:3727)
-                                                                                  at android.view.ViewGroup.dispatchDraw(ViewGroup.java:3513)
-                                                                                  at android.view.View.draw(View.java:17188)
-                                                                                  at com.android.internal.policy.DecorView.draw(DecorView.java:753)
-                                                                                  at android.view.View.updateDisplayListIfDirty(View.java:16167)
-                                                                                  at android.view.ThreadedRenderer.updateViewTreeDisplayList(ThreadedRenderer.java:648)
-                                                                                  at android.view.ThreadedRenderer.updateRootDisplayList(ThreadedRenderer.java:654)
-                                                                                  at android.view.ThreadedRenderer.draw(ThreadedRenderer.java:762)
-                                                                                  at android.view.ViewRootImpl.draw(ViewRootImpl.java:2800)
-                                                                                  at android.view.ViewRootImpl.performDraw(ViewRootImpl.java:2608)
-                                                                                  at android.view.ViewRootImpl.performTraversals(ViewRootImpl.java:2215)
-                                                                                  at android.view.ViewRootImpl.doTraversal(ViewRootImpl.java:1254)
-                                                                                  at android.view.ViewRootImpl$TraversalRunnable.run(ViewRootImpl.java:6337)
-                                                                                  at android.view.Choreographer$CallbackRecord.run(Choreographer.java:874)
-                                                                                  at android.view.Choreographer.doCallbacks(Choreographer.java:686)
-                                                                                  at android.view.Choreographer.doFrame(Choreographer.java:621)
-                                                                                  at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:860)
-                                                                                  at android.os.Handler.handleCallback(Handler.java:751)
-                                                                                  at android.os.Handler.dispatchMessage(Handler.java:95)
-                                                                                  at android.os.Looper.loop(Looper.java:154)
-                                                                                  at android.app.ActivityThread.main(ActivityThread.java:6119)
-                                                                                  at java.lang.reflect.Method.invoke(Native Method)
-                                                                                  at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:886)
-                                                                                  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:776)
-             */
+
                 Entry<Double> min = Collections.min(entries, new Comparator<Entry<Double>>() {
                     @Override
                     public int compare(Entry<Double> doubleEntry, Entry<Double> t1) {
@@ -239,24 +132,32 @@ public class NumberGraphView extends GraphView<Double> {
                 p.setTextSize(getFontSize(0));
                 p.setColor(current.color);
                 p.setAlpha(255);
-                String v = String.format("%." + decimal + "f", min.value) + " " + getUnit();
+                String v = String.format("Min: %." + decimal + "f", min.value) + " " + getUnit();
                 int x1 = (int) ((double) (min.date.getTime() - timeMin) * pxms) - (int) p.measureText(v) / 2;
                 int y1 = h - (int) (min.value * pxunit) + (int) p.getTextSize() + (int) padding + (int) (this.min * pxunit);
                 drawStringOnCanvas(v, x1, y1, p, canvas);
 
 
-                v = String.format("%." + decimal + "f", max.value) + " " + getUnit();
+                v = String.format("Max: %." + decimal + "f", max.value) + " " + getUnit();
                 x1 = (int) ((double) (max.date.getTime() - timeMin) * pxms) - (int) p.measureText(v) / 2;
                 y1 = h - (int) (max.value * pxunit) - (int) padding + (int) (this.min * pxunit);
                 drawStringOnCanvas(v, x1, y1, p, canvas);
 
-                p.setTextSize(getFontSize(2));
-                v = entries.getName() + ": " + String.format("%." + decimal + "f", current.value) + " " + getUnit();
-                if (v != null) {
+                v = String.format("Átl: %." + decimal + "f", avg) + " " + getUnit();
+                x1 = (int) ((double) (w -  p.measureText(v) / 2) / 2);
+                y1 = h - (int) (avg * pxunit) - (int) padding + (int) (this.min * pxunit);
+                drawStringOnCanvas(v, x1, y1, p, canvas);
+
+                if (entries.getName() != null) {
+                    nameDrawCount++;
+                    p.setTextSize(getFontSize(1));
+                    v = entries.getName() + ": " + String.format("%." + decimal + "f", current.value) + " " + getUnit();
                     //x1 = (int) ((double) ((current.date.getTime() - start.date.getTime()) / 2) * pxms) - (int) p.measureText(v) / 2;
                     x1 = (int) ((double) (timeInterval / 2) * pxms) - (int) p.measureText(v) / 2;
                     y1 = h - (int) (avg * pxunit) - (int) padding + (int) (this.min * pxunit);
-                    drawStringOnCanvas(v, x1, y1, p, canvas);
+                    //drawStringOnCanvas(v, x1, y1, p, canvas);
+                    drawStringOnCanvas(v, w, (int)((padding + getFontSize(1)) * nameDrawCount), p, canvas);
+
                 }
 /*
         p.setTextSize(getFontSize(2));
@@ -276,13 +177,14 @@ public class NumberGraphView extends GraphView<Double> {
         super.createCoordinateSystem(vdiv, hdiv);
         HorizontalGraphLine h;
         for (int i=0; i<=hdiv; i++) {
-            horizontalGraphLineList.add(h = new HorizontalGraphLine((max - min) / (double)hdiv * (double)i, 0x5f000000, String.format("%."+decimal+"f",(max - min) / (double) hdiv* (double)i) + " " + unit));
+            horizontalGraphLineList.add(h = new HorizontalGraphLine((max - min) / (double)hdiv * (double)i, 0xaf000000, String.format("%."+decimal+"f",(max - min) / (double) hdiv* (double)i) + " " + unit));
             hCoordLines.add(h);
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        nameDrawCount = 0;
         super.onDraw(canvas);
         //onDrawSuffix(canvas);
     }

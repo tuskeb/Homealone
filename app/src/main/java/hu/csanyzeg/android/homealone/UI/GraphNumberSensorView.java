@@ -8,9 +8,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
+import com.google.android.gms.vision.text.Line;
 
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.NumberData;
@@ -28,7 +31,7 @@ import java.util.Random;
 /**
  * TODO: document your custom view class.
  */
-public class GraphNumberSensorView extends RelativeLayout implements InitableUI, NumberSensor {
+public class GraphNumberSensorView extends LinearLayout implements InitableUI, NumberSensor {
 
     protected NumberView valueView;
     protected NumberGraphView graphView;
