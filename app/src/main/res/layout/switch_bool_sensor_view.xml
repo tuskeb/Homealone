@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fullSensorGraphView"></hu.csanyzeg.android.homealone.UI.GraphBoolSensorView>
+
     <!--
     <RadioGroup
         android:layout_width="wrap_content"

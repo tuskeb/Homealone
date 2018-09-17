@@ -34,11 +34,7 @@ public class FullSensorViewInflater {
 
 
     public static Sensor inflate(Context context, HashMap<String, Data> dataHashMap, String configID, final DatabaseService databaseService){
-        Point p = new Point();
-        WindowManager windowManager;
-        (windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
-        int orientation = context.getResources().getConfiguration().orientation;
-        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
+
 
 
         Sensor sensorView = null;
@@ -183,13 +179,20 @@ public class FullSensorViewInflater {
                 sensorView.getData().put(c.getConfig().id, dataHashMap.get(c.getConfig().id));
             }
         }
+/*
+        Point p = new Point();
+        WindowManager windowManager;
+        (windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
+        int orientation = context.getResources().getConfiguration().orientation;
+        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
         LinearLayout.LayoutParams layoutParams = null;
         if (sensorView instanceof BoolSensor) {
             layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height/2);
         }else{
             layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
         }
-        ((LinearLayout)sensorView).setLayoutParams(layoutParams);
+
+        ((LinearLayout)sensorView).setLayoutParams(layoutParams);*/
         return sensorView;
     }
 }

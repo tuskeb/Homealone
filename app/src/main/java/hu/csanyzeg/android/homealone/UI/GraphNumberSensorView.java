@@ -3,10 +3,13 @@ package hu.csanyzeg.android.homealone.UI;
 import android.content.Context;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -95,6 +98,21 @@ public class GraphNumberSensorView extends LinearLayout implements InitableUI, N
         percentView = getRootView().findViewById(R.id.percent);
         displayView  = getRootView().findViewById(R.id.txt);
         iconView  = getRootView().findViewById(R.id.icon_view);
+
+
+        Point p = new Point();
+        WindowManager windowManager;
+        (windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
+        int orientation = getContext().getResources().getConfiguration().orientation;
+        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
+
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, height/2);
+        graphView.setLayoutParams(layoutParams);
+
+
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, height/2);
+        percentView.setLayoutParams(layoutParams2);
 
         graphView.setOnClickListener(new View.OnClickListener() {
             @Override

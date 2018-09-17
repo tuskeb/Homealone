@@ -2,10 +2,13 @@ package hu.csanyzeg.android.homealone.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -94,6 +97,16 @@ public class GraphBoolSensorView extends LinearLayout implements InitableUI, Boo
         displayView = getRootView().findViewById(R.id.txt);
         graphView = getRootView().findViewById(R.id.graph);
         boolIndicatorView = getRootView().findViewById(R.id.boolindicator);
+
+        Point p = new Point();
+        WindowManager windowManager;
+        (windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
+        int orientation = getContext().getResources().getConfiguration().orientation;
+        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
+        LinearLayout.LayoutParams layoutParams = null;
+        layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height/3);
+
+        graphView.setLayoutParams(layoutParams);
 
         graphView.setOnClickListener(new View.OnClickListener() {
             @Override
