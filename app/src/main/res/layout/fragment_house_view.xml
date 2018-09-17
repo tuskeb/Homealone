@@ -15,5 +15,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Feladat: Csatalkozás az adatbázis szolgáltatáshoz, amely tartja a kapcsolatot a kiszolgálóval. A konfigurációs osztályból felépíteni a kezelőfelületet. Frissítgetni az adatokat az adatbázis szolgáltatás üzenetei és adatai alapján." />
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/belsohomerseklet"
+        />
 </LinearLayout>
