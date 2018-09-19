@@ -403,5 +403,46 @@ public class Config implements Serializable {
     }
 
 
-
+    @Override
+    public String toString() {
+        return "Config{" +
+                "color=" + color +
+                ", id='" + id + '\'' +
+                ", device='" + device + '\'' +
+                ", display='" + display + '\'' +
+                ", write=" + write +
+                ", label='" + label + '\'' +
+                ", enabled=" + enabled +
+                ", default_value=" + default_value +
+                ", suffix='" + suffix + '\'' +
+                ", min=" + min +
+                ", max=" + max +
+                ", icon='" + icon + '\'' +
+                ", iconOn='" + iconOn + '\'' +
+                ", iconOff='" + iconOff + '\'' +
+                ", posX=" + posX +
+                ", pozX=" + pozX +
+                ", posY=" + posY +
+                ", pozY=" + pozY +
+                ", groupValue='" + groupValue + '\'' +
+                ", parent='" + parent + '\'' +
+                ", sensor=" + sensor +
+                ", monostab=" + monostab +
+                ", alarmSet=" + alarmSet +
+                ", alarmMinValue=" + alarmMinValue +
+                ", alarmMaxValue=" + alarmMaxValue +
+                ", alarmSwitch='" + alarmSwitch + '\'' +
+                ", alarmText='" + alarmText + '\'' +
+                ", alarmWrite=" + alarmWrite +
+                ", alarmComment='" + alarmComment + '\'' +
+                ", alarmComment2='" + alarmComment2 + '\'' +
+                ", precision=" + precision +
+                ", pozikon='" + pozikon + '\'' +
+                ", pozcomment='" + pozcomment + '\'' +
+                ", comment='" + comment + '\'' +
+                ", sensibilitypercent=" + sensibilitypercent +
+                ", sensibilitycomment='" + sensibilitycomment + '\'' +
+                ", distance=" + distance +
+                '}';
+    }
 }
