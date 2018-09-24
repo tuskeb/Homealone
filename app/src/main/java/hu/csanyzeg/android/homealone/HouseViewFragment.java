@@ -19,6 +19,7 @@ import java.util.HashMap;
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
+import hu.csanyzeg.android.homealone.Data.NumberData;
 
 
 public class HouseViewFragment extends SensorViewFragment {
@@ -48,10 +49,17 @@ public class HouseViewFragment extends SensorViewFragment {
                 switch (bundle.getInt(DatabaseService.BR_MESSAGE)) {
                     case DatabaseService.BR_DATA_UPDATE:
                         if (databaseService != null) {
-                            if (bundle.getString(DatabaseService.BR_DATA_ID) != null && bundle.getString(DatabaseService.BR_DATA_ID).equals("X1")) {
-                                reflektor.setChecked(((BoolData) databaseService.getDataHashMap().get("X1")).currentValue());
-                                belsohom.setText(databaseService.getDataHashMap().get("C8").currentValue() + "");
+                            if (bundle.getString(DatabaseService.BR_DATA_ID) != null) {
+                                Data d = databaseService.getDataHashMap().get(bundle.getString(DatabaseService.BR_DATA_ID));
 
+                                if (d instanceof NumberData) {
+                                    NumberData n = (NumberData)d;
+                                    System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
+                                }
+                                if (d instanceof BoolData) {
+                                    BoolData b = (BoolData)d;
+                                    System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
+                                }
                             }
                         }
                         break;
@@ -67,16 +75,28 @@ public class HouseViewFragment extends SensorViewFragment {
 
     @Override
     public void refreshUI(HashMap<String, Data> dataHashMap, ArrayList<Config> configs) {
-
+        for (Data d:dataHashMap.values()) {
+            d.currentValue();
+            if (d instanceof NumberData) {
+                NumberData n = (NumberData)d;
+                System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
+            }
+            if (d instanceof BoolData) {
+                BoolData b = (BoolData)d;
+                System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
+            }
+        }
     }
 
     @Override
     public void setDatabaseService(DatabaseService databaseService) {
         super.setDatabaseService(databaseService);
-        System.out.println(databaseService.getDataHashMap().get("C8").getConfig());
+        databaseService.getDataHashMap().values();
+        refreshUI(databaseService.getDataHashMap(), databaseService.getConfigs());
+       /** System.out.println(databaseService.getDataHashMap().get("C8").getConfig());
         belsohom.setText(databaseService.getDataHashMap().get("C8").currentValue() + "");
         if (databaseService.getDataHashMap().get("X1") instanceof BoolData) {
             reflektor.setChecked(((BoolData) databaseService.getDataHashMap().get("X1")).currentValue());
-        }
+        }*/
     }
 }
