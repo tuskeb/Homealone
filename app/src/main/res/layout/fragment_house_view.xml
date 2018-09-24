@@ -3,26 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/layout"
     tools:context="hu.csanyzeg.android.homealone.HouseViewFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Itt egy kép lesz a házról és a szenzorokról. A feladatot a szakkörön készítjük el." />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Feladat: Csatalkozás az adatbázis szolgáltatáshoz, amely tartja a kapcsolatot a kiszolgálóval. A konfigurációs osztályból felépíteni a kezelőfelületet. Frissítgetni az adatokat az adatbázis szolgáltatás üzenetei és adatai alapján." />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/belsohomerseklet"
-        />
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/reflektor"
-        android:text="Reflektor"/>
 </LinearLayout>

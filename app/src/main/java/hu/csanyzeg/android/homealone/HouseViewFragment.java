@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,13 +21,15 @@ import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
+import hu.csanyzeg.android.homealone.UI.BoolIndicatorView;
+import hu.csanyzeg.android.homealone.UI.BoolView;
+import hu.csanyzeg.android.homealone.UI.NumberView;
 
 
 public class HouseViewFragment extends SensorViewFragment {
 
 
-    TextView belsohom;
-    CheckBox reflektor;
+    LinearLayout linearLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,8 +39,7 @@ public class HouseViewFragment extends SensorViewFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        belsohom = getView().findViewById(R.id.belsohomerseklet);
-        reflektor = getView().findViewById(R.id.reflektor);
+        linearLayout = getView().findViewById(R.id.layout);
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -79,13 +81,25 @@ public class HouseViewFragment extends SensorViewFragment {
             d.currentValue();
             if (d instanceof NumberData) {
                 NumberData n = (NumberData)d;
-                System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
+                System.out.println(d.getConfig().display + " (Number): " + n.currentValue());
+                System.out.println(d.getGraphEntries());
+                NumberView numberView = new NumberView(getContext());
+                numberView.setValue(n.currentValue());
+                numberView.setSuffix(n.getConfig().suffix);
+                numberView.setDecimal(n.getConfig().precision);
+                numberView.setMultiLine(false);
+                linearLayout.addView(numberView);
             }
             if (d instanceof BoolData) {
                 BoolData b = (BoolData)d;
+                BoolIndicatorView boolView = new BoolIndicatorView(getContext());
+                boolView.setValue(b.currentValue());
                 System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
+                System.out.println(d.getGraphEntries());
+                linearLayout.addView(boolView);
             }
         }
+
     }
 
     @Override
