@@ -164,13 +164,13 @@ public class Config implements Serializable {
     /**
      * A ház képén megjelenő ikon pozíciója.
      */
-    public Integer posX = null;
+    public Integer posX = null; //TODO: Csak az egyik maradjon.
     public Integer pozX = null;
 
     /**
      * A ház képén megjelenő ikon pozíciója.
      */
-    public Integer posY = null;
+    public Integer posY = null; //TODO: Csak az egyik maradjon.
     public Integer pozY = null;
 
     /**

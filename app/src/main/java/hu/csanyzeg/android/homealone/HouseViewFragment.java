@@ -3,16 +3,12 @@ package hu.csanyzeg.android.homealone;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.AbsoluteLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,15 +17,14 @@ import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
-import hu.csanyzeg.android.homealone.UI.BoolIndicatorView;
-import hu.csanyzeg.android.homealone.UI.BoolView;
+import hu.csanyzeg.android.homealone.UI.BoolImageView;
 import hu.csanyzeg.android.homealone.UI.NumberView;
 
 
 public class HouseViewFragment extends SensorViewFragment {
 
 
-    LinearLayout linearLayout;
+    AbsoluteLayout absoluteLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,7 +34,7 @@ public class HouseViewFragment extends SensorViewFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        linearLayout = getView().findViewById(R.id.layout);
+        absoluteLayout = getView().findViewById(R.id.layout);
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -88,15 +83,27 @@ public class HouseViewFragment extends SensorViewFragment {
                 numberView.setSuffix(n.getConfig().suffix);
                 numberView.setDecimal(n.getConfig().precision);
                 numberView.setMultiLine(false);
-                linearLayout.addView(numberView);
+                absoluteLayout.addView(numberView);
             }
             if (d instanceof BoolData) {
                 BoolData b = (BoolData)d;
-                BoolIndicatorView boolView = new BoolIndicatorView(getContext());
-                boolView.setValue(b.currentValue());
-                System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
-                System.out.println(d.getGraphEntries());
-                linearLayout.addView(boolView);
+                if (d.getConfig().pozX != null && d.getConfig().pozY != null) {
+                    BoolImageView boolView = new BoolImageView(getContext());
+                    boolView.setFalseImage(R.drawable.lampaoff);//TODO: Itt egy http url-t kellene átadni!
+                    boolView.setTrueImage(R.drawable.lampaon);//TODO: Itt egy http url-t kellene átadni, amit majd a boolView tölt le!
+                    System.out.println(d.getConfig().pozX);
+                    boolView.setLeft(d.getConfig().pozX);
+                    boolView.setTop(d.getConfig().pozY);
+                    boolView.setValue(b.currentValue());
+                    //System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
+                    //System.out.println(d.getGraphEntries());
+                    boolView.setVisibility(View.GONE);
+                    absoluteLayout.addView(boolView);
+
+                    boolView.setConfig(b.getConfig());
+
+                }
+                //absoluteLayout.updateViewLayout(boolView, );
             }
         }
 
