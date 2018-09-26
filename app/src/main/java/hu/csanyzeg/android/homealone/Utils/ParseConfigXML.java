@@ -146,10 +146,10 @@ public abstract class ParseConfigXML {
                                     case "#text":
                                         break;
                                     case "x":
-                                        c.posX = Integer.parseInt(poztxt);
+                                        c.pozX = Integer.parseInt(poztxt);
                                         break;
                                     case "y":
-                                        c.posY = Integer.parseInt(poztxt);
+                                        c.pozY = Integer.parseInt(poztxt);
                                         break;
                                     case "ikon":
                                         c.icon = poztxt;
