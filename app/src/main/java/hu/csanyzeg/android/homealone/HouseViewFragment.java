@@ -89,8 +89,6 @@ public class HouseViewFragment extends SensorViewFragment {
                 BoolData b = (BoolData)d;
                 if (d.getConfig().pozX != null && d.getConfig().pozY != null) {
                     BoolImageView boolView = new BoolImageView(getContext());
-                    boolView.setFalseImage(R.drawable.lampaoff);//TODO: Itt egy http url-t kellene átadni!
-                    boolView.setTrueImage(R.drawable.lampaon);//TODO: Itt egy http url-t kellene átadni, amit majd a boolView tölt le!
                     System.out.println(d.getConfig().pozX);
                     boolView.setLeft(d.getConfig().pozX);
                     boolView.setTop(d.getConfig().pozY);

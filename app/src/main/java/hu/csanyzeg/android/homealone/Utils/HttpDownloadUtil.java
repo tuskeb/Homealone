@@ -3,10 +3,13 @@ package hu.csanyzeg.android.homealone.Utils;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;

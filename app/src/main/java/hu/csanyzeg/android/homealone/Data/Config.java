@@ -153,13 +153,13 @@ public class Config implements Serializable {
      * Bekapcsolt állapotban megjelenő ikon URL-je, amely a ház térképén jelenik meg. Logikai típus esetében van értelme.
      * Nincs jelenleg használatban.
      */
-    public String iconOn = "";
+    public String iconOn = null;
 
     /**
      * Kikapcsolt állapotban megjelenő ikon URL-je, amely a ház térképén jelenik meg. Logikai típus esetében van értelme.
      * Nincs jelenleg használatban.
      */
-    public String iconOff = "";
+    public String iconOff = null;
 
     /**
      * A ház képén megjelenő ikon pozíciója.
