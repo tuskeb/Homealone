@@ -105,77 +105,33 @@ public class BoolImageView extends ImageView implements BoolSensor {
 
         this.config = config;
         if (config.iconOn != null && config.iconOff != null) {
-            /*AsyncTask<String, String, byte[]> task = new AsyncTask<String, String, byte[]>() {
-                @Override
-                protected byte[] doInBackground(String... strings) {
-                    URL website = null;
-                    try {
-                        website = new URL(strings[0]);
-                        BufferedInputStream in = new BufferedInputStream(website.openStream());
-                        byte dataBuffer[] = new byte[4096];
-                        int bytesRead;
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int size = 0;
-                        while ((bytesRead = in.read(dataBuffer, size, 1024)) != -1) {
-                            //System.out.println(bytesRead);
-                            if (dataBuffer.length - 2048 <size){
-                                byte[] dataBuffer2 = new byte[dataBuffer.length + 4096];
-                                System.arraycopy(dataBuffer, 0, dataBuffer2, 0, dataBuffer.length);
-                                System.out.println(dataBuffer.length + " - - - - " + dataBuffer2.length);
-                                dataBuffer = dataBuffer2;
-                            }
-                            size += bytesRead;
-                        }
-
-                        System.out.println("-----------------" + size);
-                        return Arrays.copyOf(dataBuffer,size);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(byte[] bytes) {
-                    super.onPostExecute(bytes);
-                    setImageBitmap(BitmapFactory.decodeByteArray(bytes,0,bytes.length));
-                    onDonwloadComplete();
-                }
-            };
-
-
-            task.execute("");
-            */
             new HttpByteArrayDownloadUtil(){
                 @Override
-                protected void onPostExecute(byte[] bytes) {
+                protected void onPostExecute(Result bytes) {
                     super.onPostExecute(bytes);
-                    resTrue = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                    if (resTrue != null && resFalse != null) {
-                        onDonwloadComplete();
+                    if (bytes.errorCode == ErrorCode.OK) {
+                        resTrue = BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length);
+                        if (resTrue != null && resFalse != null) {
+                            onDonwloadComplete();
+                        }
                     }
                 }
             }.execute(config.iconOn);
             new HttpByteArrayDownloadUtil(){
                 @Override
-                protected void onPostExecute(byte[] bytes) {
+                protected void onPostExecute(Result bytes) {
                     super.onPostExecute(bytes);
-                    resFalse = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                    if (resTrue != null && resFalse != null) {
-                        onDonwloadComplete();
+                    if (bytes.errorCode == ErrorCode.OK) {
+                        resFalse = BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length);
+                        if (resTrue != null && resFalse != null) {
+                            onDonwloadComplete();
+                        }
                     }
                 }
             }.execute(config.iconOff);
         }
-        //TODO: Letöltést itt megkezdeni, és a letöltés végén meghívni az onDownloadComplete metódust.
         //Teszt:
         // http://tuskeb.duckdns.org/homealone/
-        //onDonwloadComplete();
     }
 
     @Override
