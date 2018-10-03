@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId 'hu.csanyzeg.android.homelone'
         minSdkVersion 17
@@ -22,7 +22,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
         sourceCompatibility JavaVersion.VERSION_1_7
     }
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '27.0.3'
 }
 
 dependencies {
