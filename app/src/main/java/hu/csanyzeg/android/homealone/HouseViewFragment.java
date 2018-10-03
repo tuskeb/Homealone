@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.UI.BoolImageView;
 import hu.csanyzeg.android.homealone.UI.HttpImageView;
 import hu.csanyzeg.android.homealone.UI.NumberView;
+import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
 
 
 public class HouseViewFragment extends SensorViewFragment {
@@ -75,9 +77,7 @@ public class HouseViewFragment extends SensorViewFragment {
 
     @Override
     public void refreshUI(final HashMap<String, Data> dataHashMap, final ArrayList<Config> configs) {
-        double parentWidth = absoluteLayout.getWidth();
-        double parentHeight = absoluteLayout.getHeight();
-        if (parentHeight==0.0 || parentWidth == 0.0){ //Abban az esetben, ha előbb frissítene, minthogy megjelenik:)
+        if (absoluteLayout.getWidth()==0.0 || absoluteLayout.getHeight() == 0.0){ //Abban az esetben, ha előbb frissítene, minthogy megjelenik:)
             getView().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -87,44 +87,49 @@ public class HouseViewFragment extends SensorViewFragment {
             return;
         }
         absoluteLayout.removeAllViews();
-        AbsoluteLayout.LayoutParams lp = new AbsoluteLayout.LayoutParams(absoluteLayout.getWidth(), absoluteLayout.getHeight(), 0, 0);
-        absoluteLayout.addView(mapImageView = new HttpImageView(getContext()), lp);
-        mapImageView.setURL(Config.map);
-        System.out.println(" Szélesség: " + parentWidth);
-        System.out.println(" Magasság: " + parentHeight);
-        for (Data d:dataHashMap.values()) {
-            //d.currentValue();
-            if (d instanceof NumberData) {
-                NumberData n = (NumberData)d;
-                System.out.println(d.getConfig().display + " (Number): " + n.currentValue());
-                System.out.println(d.getGraphEntries());
-                NumberView numberView = new NumberView(getContext());
-                numberView.setValue(n.currentValue());
-                numberView.setSuffix(n.getConfig().suffix);
-                numberView.setDecimal(n.getConfig().precision);
-                numberView.setMultiLine(false);
-                absoluteLayout.addView(numberView);
-            }
-            if (d instanceof BoolData) {
-                BoolData b = (BoolData)d;
-                if (d.getConfig().pozX != null && d.getConfig().pozY != null) {
-                    BoolImageView boolView = new BoolImageView(getContext());
-                    //System.out.println(d.getConfig().pozX);
+        mapImageView  = new HttpImageView(getContext()){
+            @Override
+            public void onImageDownloadComplete(HttpByteArrayDownloadUtil.Result bytes) {
+                super.onImageDownloadComplete(bytes);
+                double scaleX=(double)absoluteLayout.getWidth() / (double)getDrawable().getBounds().width();
+                double scaleY=(double)absoluteLayout.getHeight() / (double)getDrawable().getBounds().height();
+                    System.out.println(" Drawable width: " + scaleX);
+                    System.out.println(" Drawable height: " + scaleY);
+                    double scale = scaleX<scaleY?scaleX:scaleY;
+                double parentWidth = ((double)getDrawable().getBounds().width()*scale);
+                double parentHeight = ((double)getDrawable().getBounds().height()*scale);
+                double offsetX = (absoluteLayout.getWidth() - parentWidth) / 2.0;
+                double offsetY = (absoluteLayout.getHeight() - parentHeight) / 2.0;
+                AbsoluteLayout.LayoutParams lp = new AbsoluteLayout.LayoutParams((int)parentWidth, (int)parentHeight, (int)offsetX, (int)offsetY);
+                setLayoutParams(lp);
 
+                for (Data d:dataHashMap.values()) {
                     Config c = d.getConfig();
-                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.width.doubleValue()*parentWidth), (int)(c.height.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth), (int)(c.pozY.doubleValue()*parentHeight));
-                    boolView.setValue(b.currentValue());
-                    //System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
-                    //System.out.println(d.getGraphEntries());
-                    //boolView.setVisibility(View.GONE);
-                    absoluteLayout.addView(boolView, layoutParams);
-
-                    boolView.setConfig(b.getConfig());
-
+                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.width.doubleValue()*parentWidth), (int)(c.height.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth) + (int)offsetX, (int)(c.pozY.doubleValue()*parentHeight) + (int)offsetY);
+                    if (d instanceof NumberData) {
+                        NumberData n = (NumberData)d;
+                        NumberView numberView = new NumberView(getContext());
+                        numberView.setValue(n.currentValue());
+                        numberView.setSuffix(n.getConfig().suffix);
+                        numberView.setDecimal(n.getConfig().precision);
+                        numberView.setMultiLine(false);
+                        absoluteLayout.addView(numberView, layoutParams);
+                    }
+                    if (d instanceof BoolData) {
+                        BoolData b = (BoolData)d;
+                        BoolImageView boolView = new BoolImageView(getContext());
+                        boolView.setValue(b.currentValue());
+                        absoluteLayout.addView(boolView, layoutParams);
+                        boolView.setConfig(b.getConfig());
+                    }
                 }
-                //absoluteLayout.updateViewLayout(boolView, );
+
             }
-        }
+        };
+
+        absoluteLayout.addView(mapImageView);
+        mapImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mapImageView.setURL(Config.map);
 
     }
 

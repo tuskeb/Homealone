@@ -31,11 +31,20 @@ public class HttpImageView extends ImageView {
             protected void onPostExecute(Result bytes) {
                 super.onPostExecute(bytes);
                 if (bytes.errorCode == ErrorCode.OK) {
-                    setImageBitmap(BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length));
+                    onImageDownloadComplete(bytes);
                 }else{
-                    setImageResource(R.drawable.imagesensorviewerror);
+                    onImageDownloadFail();
                 }
             }
         }.execute(url);
+    }
+
+    public void onImageDownloadComplete(HttpByteArrayDownloadUtil.Result bytes){
+        setImageBitmap(BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length));
+    }
+
+
+    public void onImageDownloadFail(){
+        setImageResource(R.drawable.imagesensorviewerror);
     }
 }
