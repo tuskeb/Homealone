@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
 import hu.csanyzeg.android.homealone.UI.BoolImageView;
+import hu.csanyzeg.android.homealone.UI.HttpImageView;
 import hu.csanyzeg.android.homealone.UI.NumberView;
 
 
@@ -25,6 +27,7 @@ public class HouseViewFragment extends SensorViewFragment {
 
 
     AbsoluteLayout absoluteLayout;
+    HttpImageView mapImageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,11 +54,11 @@ public class HouseViewFragment extends SensorViewFragment {
 
                                 if (d instanceof NumberData) {
                                     NumberData n = (NumberData)d;
-                                    System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
+                                    //System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
                                 }
                                 if (d instanceof BoolData) {
                                     BoolData b = (BoolData)d;
-                                    System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
+                                    //System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
                                 }
                             }
                         }
@@ -71,9 +74,26 @@ public class HouseViewFragment extends SensorViewFragment {
     }
 
     @Override
-    public void refreshUI(HashMap<String, Data> dataHashMap, ArrayList<Config> configs) {
+    public void refreshUI(final HashMap<String, Data> dataHashMap, final ArrayList<Config> configs) {
+        double parentWidth = absoluteLayout.getWidth();
+        double parentHeight = absoluteLayout.getHeight();
+        if (parentHeight==0.0 || parentWidth == 0.0){ //Abban az esetben, ha előbb frissítene, minthogy megjelenik:)
+            getView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    refreshUI(dataHashMap,configs);
+                }
+            }, 100); //Ezt ki lehet várni, talán...
+            return;
+        }
+        absoluteLayout.removeAllViews();
+        AbsoluteLayout.LayoutParams lp = new AbsoluteLayout.LayoutParams(absoluteLayout.getWidth(), absoluteLayout.getHeight(), 0, 0);
+        absoluteLayout.addView(mapImageView = new HttpImageView(getContext()), lp);
+        mapImageView.setURL(Config.map);
+        System.out.println(" Szélesség: " + parentWidth);
+        System.out.println(" Magasság: " + parentHeight);
         for (Data d:dataHashMap.values()) {
-            d.currentValue();
+            //d.currentValue();
             if (d instanceof NumberData) {
                 NumberData n = (NumberData)d;
                 System.out.println(d.getConfig().display + " (Number): " + n.currentValue());
@@ -89,14 +109,15 @@ public class HouseViewFragment extends SensorViewFragment {
                 BoolData b = (BoolData)d;
                 if (d.getConfig().pozX != null && d.getConfig().pozY != null) {
                     BoolImageView boolView = new BoolImageView(getContext());
-                    System.out.println(d.getConfig().pozX);
-                    boolView.setLeft(d.getConfig().pozX);
-                    boolView.setTop(d.getConfig().pozY);
+                    //System.out.println(d.getConfig().pozX);
+
+                    Config c = d.getConfig();
+                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.width.doubleValue()*parentWidth), (int)(c.height.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth), (int)(c.pozY.doubleValue()*parentHeight));
                     boolView.setValue(b.currentValue());
                     //System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
                     //System.out.println(d.getGraphEntries());
-                    boolView.setVisibility(View.GONE);
-                    absoluteLayout.addView(boolView);
+                    //boolView.setVisibility(View.GONE);
+                    absoluteLayout.addView(boolView, layoutParams);
 
                     boolView.setConfig(b.getConfig());
 

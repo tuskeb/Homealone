@@ -38,13 +38,15 @@ import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.BoolValue;
+import hu.csanyzeg.android.homealone.R;
 import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
 import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 
 public class BoolImageView extends ImageView implements BoolSensor {
 
-
-
+    boolean download = false;
+    BoolData data;
+    String id;
     Bitmap resTrue = null;
     Bitmap resFalse = null;
 
@@ -52,23 +54,34 @@ public class BoolImageView extends ImageView implements BoolSensor {
 
     public BoolImageView(Context context) {
         super(context);
+        updateContent();
     }
 
     public BoolImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        updateContent();
     }
 
     public BoolImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        updateContent();
     }
 
 
     public void updateContent(){
         if (value!= null) {
-            if (value) {
-                setImageBitmap(resTrue);
-            } else {
-                setImageBitmap(resFalse);
+            if (resTrue!=null && resFalse != null) {
+                if (value) {
+                    setImageBitmap(resTrue);
+                } else {
+                    setImageBitmap(resFalse);
+                }
+            }else{
+                if (download){
+                    setImageResource(R.drawable.imagesensorviewerror);
+                }else{
+                    setImageResource(R.drawable.imagesensorview);
+                }
             }
         }
     }
@@ -114,6 +127,8 @@ public class BoolImageView extends ImageView implements BoolSensor {
                         if (resTrue != null && resFalse != null) {
                             onDonwloadComplete();
                         }
+                    }else{
+                        onDonwloadError();
                     }
                 }
             }.execute(config.iconOn);
@@ -126,6 +141,8 @@ public class BoolImageView extends ImageView implements BoolSensor {
                         if (resTrue != null && resFalse != null) {
                             onDonwloadComplete();
                         }
+                    }else{
+                        onDonwloadError();
                     }
                 }
             }.execute(config.iconOff);
@@ -136,25 +153,36 @@ public class BoolImageView extends ImageView implements BoolSensor {
 
     @Override
     public HashMap<String, BoolData> getData() {
-        return null;
+        HashMap<String, BoolData> h = new HashMap<String, BoolData>();
+        h.put(id, data);
+        return h;
     }
 
     @Override
     public void addData(String id, BoolData d) {
-
+        data = d;
+        this.id = id;
+        updateData();
     }
 
     @Override
     public void updateData() {
-
+        setValue(data.currentValue());
     }
-
+    public void onDonwloadError() {
+        download = true;
+        updateContent();
+    }
     public void onDonwloadComplete(){
+        download = true;
+        updateContent();
+        /*
         if (((AbsoluteLayout)getParent()) != null) {
-            AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams(100, 200, config.pozX, config.pozY);
+            AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams(config.width, config.height, config.pozX, config.pozY);
             ((AbsoluteLayout) getParent()).updateViewLayout(this, layoutParams);
             setVisibility(VISIBLE);
             updateContent();
         }
+        */
     }
 }

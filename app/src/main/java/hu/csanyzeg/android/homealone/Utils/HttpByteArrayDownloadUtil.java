@@ -84,14 +84,14 @@ public class HttpByteArrayDownloadUtil extends AsyncTask<String, String, HttpByt
                     }
                     byte[] dataBuffer2 = new byte[dataBuffer.length + incBufferSize];
                     System.arraycopy(dataBuffer, 0, dataBuffer2, 0, dataBuffer.length);
-                    System.out.println(dataBuffer.length + " - - - - " + dataBuffer2.length);
+                    //System.out.println(dataBuffer.length + " - - - - " + dataBuffer2.length);
                     dataBuffer = dataBuffer2;
                 }
                 size += bytesRead;
             }
 
 
-            System.out.println("-----------------" + size);
+            //System.out.println("-----------------" + size);
             result.errorCode = ErrorCode.OK;
             result.bytes = Arrays.copyOf(dataBuffer,size);
             return result;

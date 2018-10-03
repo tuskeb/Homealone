@@ -162,14 +162,25 @@ public class Config implements Serializable {
     public String iconOff = null;
 
     /**
-     * A ház képén megjelenő ikon pozíciója.
+     * A ház képén megjelenő ikon pozíciója. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
      */
-    public Integer pozX = null;
+    public Double pozX = 0.0;
 
     /**
-     * A ház képén megjelenő ikon pozíciója.
+     * A ház képén megjelenő ikon pozíciója. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
      */
-    public Integer pozY = null;
+    public Double pozY = 0.0;
+
+    /**
+     * A ház képén megjelenő ikon mérete. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
+     */
+    public Double width = 0.1;
+
+
+    /**
+     * A ház képén megjelenő ikon mérete. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
+     */
+    public Double height = 0.1;
 
     /**
      * A szenzorok csoportosíthatók, azaz a konfigurációs fájlban meghatározható olyan bejegyzés, amely csoportot definiál.
