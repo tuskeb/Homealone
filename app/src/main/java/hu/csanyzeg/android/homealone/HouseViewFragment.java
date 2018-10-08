@@ -129,7 +129,7 @@ public class HouseViewFragment extends SensorViewFragment {
 
         absoluteLayout.addView(mapImageView);
         mapImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mapImageView.setURL(Config.map);
+        mapImageView.setURL(Config.houseViewURL + "/" +  Config.map);
 
     }
 

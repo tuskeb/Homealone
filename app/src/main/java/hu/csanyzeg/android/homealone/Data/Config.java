@@ -52,7 +52,13 @@ public class Config implements Serializable {
     /**
      * A ház képének URL-je. Majd a ház nézethez kell.
      */
-    public static String map = null;
+    public static String map = "";
+
+    /**
+     * A házhoz tartozó képeket innen tölti le. Majd a ház nézethez kell. Pl.: houseViewURL + "/" + map
+     */
+    public static String houseViewURL = "";
+
 
     /**
      * A ház GPS koordinátája.
