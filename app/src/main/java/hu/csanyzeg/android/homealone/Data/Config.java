@@ -15,6 +15,12 @@ public class Config implements Serializable {
     /**
      *
      */
+    public static String SID = "dcsknbv7p37aq79i";
+
+
+    /**
+     *
+     */
     public static String name = "Config";
 
     /**
