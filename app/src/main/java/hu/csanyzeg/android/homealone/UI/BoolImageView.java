@@ -131,7 +131,7 @@ public class BoolImageView extends ImageView implements BoolSensor {
                         onDonwloadError();
                     }
                 }
-            }.execute(config.iconOn);
+            }.execute(Config.houseViewURL + "/" + config.iconOn);
             new HttpByteArrayDownloadUtil(){
                 @Override
                 protected void onPostExecute(Result bytes) {
@@ -145,7 +145,7 @@ public class BoolImageView extends ImageView implements BoolSensor {
                         onDonwloadError();
                     }
                 }
-            }.execute(config.iconOff);
+            }.execute(Config.houseViewURL + "/" + config.iconOff);
         }
         //Teszt:
         // http://tuskeb.duckdns.org/homealone/
@@ -178,7 +178,7 @@ public class BoolImageView extends ImageView implements BoolSensor {
         updateContent();
         /*
         if (((AbsoluteLayout)getParent()) != null) {
-            AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams(config.width, config.height, config.pozX, config.pozY);
+            AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams(config.pozW, config.pozH, config.pozX, config.pozY);
             ((AbsoluteLayout) getParent()).updateViewLayout(this, layoutParams);
             setVisibility(VISIBLE);
             updateContent();

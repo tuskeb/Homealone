@@ -15,7 +15,7 @@ public class Config implements Serializable {
     /**
      *
      */
-    public static String SID = "dcsknbv7p37aq79i";
+    public static String sessionId = "dcsknbv7p37aq79i";
 
 
     /**
@@ -186,13 +186,13 @@ public class Config implements Serializable {
     /**
      * A ház képén megjelenő ikon mérete. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
      */
-    public Double width = 0.1;
+    public Double pozW = 0.1;
 
 
     /**
      * A ház képén megjelenő ikon mérete. (0 és 1 közötti érték, a program a ház térképéhez viszonyít)
      */
-    public Double height = 0.1;
+    public Double pozH = 0.1;
 
     /**
      * A szenzorok csoportosíthatók, azaz a konfigurációs fájlban meghatározható olyan bejegyzés, amely csoportot definiál.

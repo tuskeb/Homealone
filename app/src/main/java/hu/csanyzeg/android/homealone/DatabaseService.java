@@ -10,12 +10,10 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
@@ -30,7 +28,6 @@ import hu.csanyzeg.android.homealone.Utils.ParseConfigINI;
 import hu.csanyzeg.android.homealone.Utils.ParseCurrentDataXML;
 import hu.csanyzeg.android.homealone.Utils.ParseHistoryDataXML;
 
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -287,7 +284,7 @@ public class DatabaseService extends IntentService {
         //Aktuális adatok letöltése
         HashMap<String, String> get = new HashMap<>();
         get.put("format", "xml");
-        get.put("SID", Config.SID);
+        get.put("sessionId", Config.sessionId);
         new HttpDownloadUtil() {
             @Override
             public void onDownloadStart() {

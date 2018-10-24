@@ -1,17 +1,12 @@
 package hu.csanyzeg.android.homealone.Utils;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Point;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
 
 import java.util.HashMap;
 
 import hu.csanyzeg.android.homealone.Data.AlarmEvent;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.DatabaseService;
-import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.Sensor;
 import hu.csanyzeg.android.homealone.UI.AlarmBoolSensorView;
 import hu.csanyzeg.android.homealone.UI.AlarmMaxSensorNumberSensorView;
@@ -55,7 +50,7 @@ public class FullSensorViewInflater {
                     public void doubleValueChanged(final Double value) {
                         HashMap<String, String> get = new HashMap<>();
                         get.put("format", "xml");
-                        get.put("SID", Config.SID);
+                        get.put("sessionId", Config.sessionId);
                         get.put(config.id, String.format("%.2f" , value).replace(",","."));
                         new HttpDownloadUtil() {
                             @Override
@@ -109,7 +104,7 @@ public class FullSensorViewInflater {
                         public void onChangeValueTrue() {
                             HashMap<String, String> get = new HashMap<>();
                             get.put("format", "xml");
-                            get.put("SID", Config.SID);
+                            get.put("sessionId", Config.sessionId);
                             get.put(config.id, "1");
                             new HttpDownloadUtil() {
                                 @Override
@@ -135,7 +130,7 @@ public class FullSensorViewInflater {
                         public void onChangeValueFalse() {
                             HashMap<String, String> get = new HashMap<>();
                             get.put("format", "xml");
-                            get.put("SID", Config.SID);
+                            get.put("sessionId", Config.sessionId);
                             get.put(config.id, "0");
                             new HttpDownloadUtil() {
                                 @Override
@@ -187,12 +182,12 @@ public class FullSensorViewInflater {
         WindowManager windowManager;
         (windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
         int orientation = context.getResources().getConfiguration().orientation;
-        int height = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
+        int pozH = orientation == Configuration.ORIENTATION_LANDSCAPE? (int)(p.y/2.0):(int)(p.y/2.5);
         LinearLayout.LayoutParams layoutParams = null;
         if (sensorView instanceof BoolSensor) {
-            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height/2);
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pozH/2);
         }else{
-            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pozH);
         }
 
         ((LinearLayout)sensorView).setLayoutParams(layoutParams);*/

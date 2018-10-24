@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,10 @@ import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
 import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Data.NumberData;
+import hu.csanyzeg.android.homealone.Interfaces.Sensor;
 import hu.csanyzeg.android.homealone.UI.BoolImageView;
 import hu.csanyzeg.android.homealone.UI.HttpImageView;
+import hu.csanyzeg.android.homealone.UI.NumberImageView;
 import hu.csanyzeg.android.homealone.UI.NumberView;
 import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
 
@@ -30,6 +31,7 @@ public class HouseViewFragment extends SensorViewFragment {
 
     AbsoluteLayout absoluteLayout;
     HttpImageView mapImageView;
+    private ArrayList<Sensor> sensors = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +55,12 @@ public class HouseViewFragment extends SensorViewFragment {
                         if (databaseService != null) {
                             if (bundle.getString(DatabaseService.BR_DATA_ID) != null) {
                                 Data d = databaseService.getDataHashMap().get(bundle.getString(DatabaseService.BR_DATA_ID));
-
+                                for(Sensor f : sensors) {
+                                    if (null != f.getData().get(bundle.getString(DatabaseService.BR_DATA_ID))) {
+                                        f.updateData();
+                                    }
+                                }
+                                /*
                                 if (d instanceof NumberData) {
                                     NumberData n = (NumberData)d;
                                     //System.out.println(d.getConfig().display + " (Number): " + d.currentValue());
@@ -62,6 +69,7 @@ public class HouseViewFragment extends SensorViewFragment {
                                     BoolData b = (BoolData)d;
                                     //System.out.println(d.getConfig().display + " (Bool): " + b.currentValue());
                                 }
+                                */
                             }
                         }
                         break;
@@ -87,14 +95,14 @@ public class HouseViewFragment extends SensorViewFragment {
             return;
         }
         absoluteLayout.removeAllViews();
-        mapImageView  = new HttpImageView(getContext()){
+        mapImageView = new HttpImageView(getContext()){
             @Override
             public void onImageDownloadComplete(HttpByteArrayDownloadUtil.Result bytes) {
                 super.onImageDownloadComplete(bytes);
                 double scaleX=(double)absoluteLayout.getWidth() / (double)getDrawable().getBounds().width();
                 double scaleY=(double)absoluteLayout.getHeight() / (double)getDrawable().getBounds().height();
-                    System.out.println(" Drawable width: " + scaleX);
-                    System.out.println(" Drawable height: " + scaleY);
+                    System.out.println(" Drawable pozW: " + scaleX);
+                    System.out.println(" Drawable pozH: " + scaleY);
                     double scale = scaleX<scaleY?scaleX:scaleY;
                 double parentWidth = ((double)getDrawable().getBounds().width()*scale);
                 double parentHeight = ((double)getDrawable().getBounds().height()*scale);
@@ -105,22 +113,25 @@ public class HouseViewFragment extends SensorViewFragment {
 
                 for (Data d:dataHashMap.values()) {
                     Config c = d.getConfig();
-                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.width.doubleValue()*parentWidth), (int)(c.height.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth) + (int)offsetX, (int)(c.pozY.doubleValue()*parentHeight) + (int)offsetY);
+                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.pozW.doubleValue()*parentWidth), (int)(c.pozH.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth) + (int)offsetX, (int)(c.pozY.doubleValue()*parentHeight) + (int)offsetY);
                     if (d instanceof NumberData) {
                         NumberData n = (NumberData)d;
-                        NumberView numberView = new NumberView(getContext());
-                        numberView.setValue(n.currentValue());
-                        numberView.setSuffix(n.getConfig().suffix);
-                        numberView.setDecimal(n.getConfig().precision);
-                        numberView.setMultiLine(false);
+                        NumberImageView numberView = new NumberImageView(getContext());
+                        numberView.addData(n.getConfig().id, n);
+                        //numberView.setSuffix(n.getConfig().suffix);
+                        //numberView.setDecimal(n.getConfig().precision);
                         absoluteLayout.addView(numberView, layoutParams);
+                        numberView.setConfig(n.getConfig());
+                        sensors.add(numberView);
                     }
                     if (d instanceof BoolData) {
                         BoolData b = (BoolData)d;
                         BoolImageView boolView = new BoolImageView(getContext());
-                        boolView.setValue(b.currentValue());
+                        //boolView.setValue(b.currentValue());
+                        boolView.addData(b.getConfig().id, b);
                         absoluteLayout.addView(boolView, layoutParams);
                         boolView.setConfig(b.getConfig());
+                        sensors.add(boolView);
                     }
                 }
 
