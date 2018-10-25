@@ -284,7 +284,7 @@ public class DatabaseService extends IntentService {
         //Aktuális adatok letöltése
         HashMap<String, String> get = new HashMap<>();
         get.put("format", "xml");
-        get.put("sessionId", Config.sessionId);
+        get.put("SID", Config.session_id);
         new HttpDownloadUtil() {
             @Override
             public void onDownloadStart() {

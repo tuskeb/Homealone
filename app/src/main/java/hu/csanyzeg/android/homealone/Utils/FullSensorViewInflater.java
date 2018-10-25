@@ -50,7 +50,7 @@ public class FullSensorViewInflater {
                     public void doubleValueChanged(final Double value) {
                         HashMap<String, String> get = new HashMap<>();
                         get.put("format", "xml");
-                        get.put("sessionId", Config.sessionId);
+                        get.put("SID", Config.session_id);
                         get.put(config.id, String.format("%.2f" , value).replace(",","."));
                         new HttpDownloadUtil() {
                             @Override
@@ -104,7 +104,7 @@ public class FullSensorViewInflater {
                         public void onChangeValueTrue() {
                             HashMap<String, String> get = new HashMap<>();
                             get.put("format", "xml");
-                            get.put("sessionId", Config.sessionId);
+                            get.put("SID", Config.session_id);
                             get.put(config.id, "1");
                             new HttpDownloadUtil() {
                                 @Override
@@ -130,7 +130,7 @@ public class FullSensorViewInflater {
                         public void onChangeValueFalse() {
                             HashMap<String, String> get = new HashMap<>();
                             get.put("format", "xml");
-                            get.put("sessionId", Config.sessionId);
+                            get.put("SID", Config.session_id);
                             get.put(config.id, "0");
                             new HttpDownloadUtil() {
                                 @Override

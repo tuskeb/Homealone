@@ -15,7 +15,8 @@ public class Config implements Serializable {
     /**
      *
      */
-    public static String sessionId = "dcsknbv7p37aq79i";
+
+    public static String session_id = "dcsknbv7p37aq79i";
 
 
     /**
