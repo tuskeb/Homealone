@@ -23,7 +23,9 @@ import hu.csanyzeg.android.homealone.UI.BoolImageView;
 import hu.csanyzeg.android.homealone.UI.HttpImageView;
 import hu.csanyzeg.android.homealone.UI.NumberImageView;
 import hu.csanyzeg.android.homealone.UI.NumberView;
+import hu.csanyzeg.android.homealone.UI.OnBoolValueChangeListener;
 import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
+import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 
 
 public class HouseViewFragment extends SensorViewFragment {
@@ -125,13 +127,63 @@ public class HouseViewFragment extends SensorViewFragment {
                         sensors.add(numberView);
                     }
                     if (d instanceof BoolData) {
-                        BoolData b = (BoolData)d;
+                        final BoolData b = (BoolData)d;
                         BoolImageView boolView = new BoolImageView(getContext());
                         //boolView.setValue(b.currentValue());
                         boolView.addData(b.getConfig().id, b);
                         absoluteLayout.addView(boolView, layoutParams);
                         boolView.setConfig(b.getConfig());
                         sensors.add(boolView);
+                        if (b.getConfig().isWrite()){
+                            boolView.setOnCheckChangeListener(new OnBoolValueChangeListener() {
+                                @Override
+                                public void onChangeValueTrue() {
+                                    HashMap<String, String> get = new HashMap<>();
+                                    get.put("format", "xml");
+                                    get.put("SID", Config.session_id);
+                                    get.put(b.getConfig().id, "1");
+                                    new HttpDownloadUtil() {
+                                        @Override
+                                        public void onDownloadStart() {
+                                            System.out.println(b.getConfig().id + " ON");
+                                        }
+
+                                        @Override
+                                        public void onDownloadComplete(StringBuilder stringBuilder) {
+                                        }
+                                    }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
+                                }
+
+                                @Override
+                                public void onChangeValueFalse() {
+                                    HashMap<String, String> get = new HashMap<>();
+                                    get.put("format", "xml");
+                                    get.put("SID", Config.session_id);
+                                    get.put(b.getConfig().id, "0");
+                                    new HttpDownloadUtil() {
+                                        @Override
+                                        public void onDownloadStart() {
+                                            System.out.println(b.getConfig().id + " OFF");
+                                        }
+
+                                        @Override
+                                        public void onDownloadComplete(StringBuilder stringBuilder) {
+                                        }
+                                    }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
+                                }
+
+                                @Override
+                                public void onChangeValueNull() {
+
+                                }
+                            });
+                         /*   boolView.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                }
+                            });*/
+                        }
                     }
                 }
 
@@ -147,7 +199,7 @@ public class HouseViewFragment extends SensorViewFragment {
     @Override
     public void setDatabaseService(DatabaseService databaseService) {
         super.setDatabaseService(databaseService);
-        databaseService.getDataHashMap().values();
+        //databaseService.getDataHashMap().values();
         refreshUI(databaseService.getDataHashMap(), databaseService.getConfigs());
        /** System.out.println(databaseService.getDataHashMap().get("C8").getConfig());
         belsohom.setText(databaseService.getDataHashMap().get("C8").currentValue() + "");

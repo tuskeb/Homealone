@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
             @Override
             protected Integer doInBackground(String... strings) {
-                while ((myFragment = (SensorViewFragment) manager.findFragmentByTag(strings[0]))==null){
+                while (((myFragment = (SensorViewFragment) manager.findFragmentByTag(strings[0]))==null) || (getDatabaseService() == null)){
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

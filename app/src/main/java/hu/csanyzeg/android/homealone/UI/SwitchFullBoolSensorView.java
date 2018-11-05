@@ -106,9 +106,10 @@ public class SwitchFullBoolSensorView extends GraphBoolSensorView implements Swi
 
     @Override
     public void setValue(Boolean value) {
-        super.setValue(value);
+
         if (value!=null) {
             onoffCheckBox.setOnCheckedChangeListener(null);
+            super.setValue(value);
             onoffCheckBox.setChecked(value);
             onoffCheckBox.setOnCheckedChangeListener(onCheckedChangeListener);
         }

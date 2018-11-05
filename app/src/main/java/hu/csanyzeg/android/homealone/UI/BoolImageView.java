@@ -2,6 +2,7 @@ package hu.csanyzeg.android.homealone.UI;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Picture;
@@ -9,8 +10,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.PictureDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.AbsoluteLayout;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
@@ -36,14 +40,16 @@ import java.util.HashMap;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
+import hu.csanyzeg.android.homealone.Data.Data;
 import hu.csanyzeg.android.homealone.Interfaces.BoolSensor;
 import hu.csanyzeg.android.homealone.Interfaces.BoolValue;
+import hu.csanyzeg.android.homealone.Interfaces.Switch;
 import hu.csanyzeg.android.homealone.R;
 import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
 import hu.csanyzeg.android.homealone.Utils.HttpDownloadUtil;
 
-public class BoolImageView extends ImageView implements BoolSensor {
-
+public class BoolImageView extends ImageView implements BoolSensor, Switch {
+    private OnBoolValueChangeListener onCheckChangeListener =null;
     boolean download = false;
     BoolData data;
     String id;
@@ -68,6 +74,66 @@ public class BoolImageView extends ImageView implements BoolSensor {
     }
 
 
+    @Override
+    public void setOnCheckChangeListener(OnBoolValueChangeListener onCheckChangeListener) {
+        this.onCheckChangeListener = onCheckChangeListener;
+    }
+
+    @Override
+    public OnBoolValueChangeListener getOnCheckChangeListener() {
+        return onCheckChangeListener;
+    }
+
+    OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            final boolean[] cancel = {false};
+            if (!value) {
+                if (getConfig().distance!=null && getConfig().distance < Data.GPSDistanceInMeter) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                    alert.setTitle(getConfig().display);
+                    alert.setMessage("A légvonalban mért távolság otthonról nagyobb, mint " + String.format("%.0f", getConfig().distance) + " m. Folytatja a műveletet?");
+
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            cancel[0] = false;
+                            setValue(true);
+                            if (onCheckChangeListener != null) {
+                                onCheckChangeListener.onChangeValueTrue();
+                            }
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            cancel[0] = true;
+                            setValue(false);
+                        }
+                    });
+
+                    alert.show();
+                }else {
+                    if (onCheckChangeListener != null) {
+                        onCheckChangeListener.onChangeValueTrue();
+                    }
+                }
+            } else {
+                if (onCheckChangeListener != null) {
+                    onCheckChangeListener.onChangeValueFalse();
+                }
+            }
+            if (!cancel[0]){
+                setFastPolling();
+            }
+
+        }
+
+    };
+
+    public void setFastPolling() {
+        data.setFastPollingRemainCount(Config.fastPollingCount);
+    }
     public void updateContent(){
         if (value!= null) {
             if (resTrue!=null && resFalse != null) {
@@ -115,8 +181,10 @@ public class BoolImageView extends ImageView implements BoolSensor {
     private Config config;
     @Override
     public void setConfig(final Config config) {
-
         this.config = config;
+        if (this.config.isWrite()) {
+            this.setOnClickListener(onClickListener);
+        }
         if (config.iconOn != null && config.iconOff != null) {
             new HttpByteArrayDownloadUtil(){
                 @Override
@@ -185,4 +253,6 @@ public class BoolImageView extends ImageView implements BoolSensor {
         }
         */
     }
+
+
 }
