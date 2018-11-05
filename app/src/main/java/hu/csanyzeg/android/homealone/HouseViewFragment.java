@@ -114,75 +114,77 @@ public class HouseViewFragment extends SensorViewFragment {
                 setLayoutParams(lp);
 
                 for (Data d:dataHashMap.values()) {
-                    Config c = d.getConfig();
-                    AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int)(c.pozW.doubleValue()*parentWidth), (int)(c.pozH.doubleValue()*parentHeight), (int)(c.pozX.doubleValue()*parentWidth) + (int)offsetX, (int)(c.pozY.doubleValue()*parentHeight) + (int)offsetY);
-                    if (d instanceof NumberData) {
-                        NumberData n = (NumberData)d;
-                        NumberImageView numberView = new NumberImageView(getContext());
-                        numberView.addData(n.getConfig().id, n);
-                        //numberView.setSuffix(n.getConfig().suffix);
-                        //numberView.setDecimal(n.getConfig().precision);
-                        absoluteLayout.addView(numberView, layoutParams);
-                        numberView.setConfig(n.getConfig());
-                        sensors.add(numberView);
-                    }
-                    if (d instanceof BoolData) {
-                        final BoolData b = (BoolData)d;
-                        BoolImageView boolView = new BoolImageView(getContext());
-                        //boolView.setValue(b.currentValue());
-                        boolView.addData(b.getConfig().id, b);
-                        absoluteLayout.addView(boolView, layoutParams);
-                        boolView.setConfig(b.getConfig());
-                        sensors.add(boolView);
-                        if (b.getConfig().isWrite()){
-                            boolView.setOnCheckChangeListener(new OnBoolValueChangeListener() {
-                                @Override
-                                public void onChangeValueTrue() {
-                                    HashMap<String, String> get = new HashMap<>();
-                                    get.put("format", "xml");
-                                    get.put("SID", Config.session_id);
-                                    get.put(b.getConfig().id, "1");
-                                    new HttpDownloadUtil() {
-                                        @Override
-                                        public void onDownloadStart() {
-                                            System.out.println(b.getConfig().id + " ON");
-                                        }
+                    if (d.getConfig().sensor) {
+                        Config c = d.getConfig();
+                        AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams((int) (c.pozW.doubleValue() * parentWidth), (int) (c.pozH.doubleValue() * parentHeight), (int) (c.pozX.doubleValue() * parentWidth) + (int) offsetX, (int) (c.pozY.doubleValue() * parentHeight) + (int) offsetY);
+                        if (d instanceof NumberData) {
+                            NumberData n = (NumberData) d;
+                            NumberImageView numberView = new NumberImageView(getContext());
+                            numberView.addData(n.getConfig().id, n);
+                            //numberView.setSuffix(n.getConfig().suffix);
+                            //numberView.setDecimal(n.getConfig().precision);
+                            absoluteLayout.addView(numberView, layoutParams);
+                            numberView.setConfig(n.getConfig());
+                            sensors.add(numberView);
+                        }
+                        if (d instanceof BoolData) {
+                            final BoolData b = (BoolData) d;
+                            BoolImageView boolView = new BoolImageView(getContext());
+                            //boolView.setValue(b.currentValue());
+                            boolView.addData(b.getConfig().id, b);
+                            absoluteLayout.addView(boolView, layoutParams);
+                            boolView.setConfig(b.getConfig());
+                            sensors.add(boolView);
+                            if (b.getConfig().isWrite()) {
+                                boolView.setOnCheckChangeListener(new OnBoolValueChangeListener() {
+                                    @Override
+                                    public void onChangeValueTrue() {
+                                        HashMap<String, String> get = new HashMap<>();
+                                        get.put("format", "xml");
+                                        get.put("SID", Config.session_id);
+                                        get.put(b.getConfig().id, "1");
+                                        new HttpDownloadUtil() {
+                                            @Override
+                                            public void onDownloadStart() {
+                                                System.out.println(b.getConfig().id + " ON");
+                                            }
 
-                                        @Override
-                                        public void onDownloadComplete(StringBuilder stringBuilder) {
-                                        }
-                                    }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
-                                }
+                                            @Override
+                                            public void onDownloadComplete(StringBuilder stringBuilder) {
+                                            }
+                                        }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
+                                    }
 
-                                @Override
-                                public void onChangeValueFalse() {
-                                    HashMap<String, String> get = new HashMap<>();
-                                    get.put("format", "xml");
-                                    get.put("SID", Config.session_id);
-                                    get.put(b.getConfig().id, "0");
-                                    new HttpDownloadUtil() {
-                                        @Override
-                                        public void onDownloadStart() {
-                                            System.out.println(b.getConfig().id + " OFF");
-                                        }
+                                    @Override
+                                    public void onChangeValueFalse() {
+                                        HashMap<String, String> get = new HashMap<>();
+                                        get.put("format", "xml");
+                                        get.put("SID", Config.session_id);
+                                        get.put(b.getConfig().id, "0");
+                                        new HttpDownloadUtil() {
+                                            @Override
+                                            public void onDownloadStart() {
+                                                System.out.println(b.getConfig().id + " OFF");
+                                            }
 
-                                        @Override
-                                        public void onDownloadComplete(StringBuilder stringBuilder) {
-                                        }
-                                    }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
-                                }
+                                            @Override
+                                            public void onDownloadComplete(StringBuilder stringBuilder) {
+                                            }
+                                        }.download(new HttpDownloadUtil.HttpRequestInfo(databaseService.getServerURL(), HttpDownloadUtil.Method.GET, get, get));
+                                    }
 
-                                @Override
-                                public void onChangeValueNull() {
+                                    @Override
+                                    public void onChangeValueNull() {
 
-                                }
-                            });
+                                    }
+                                });
                          /*   boolView.setOnClickListener(new OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
 
                                 }
                             });*/
+                            }
                         }
                     }
                 }
