@@ -12,13 +12,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-public class HttpByteArrayDownloadUtil extends AsyncTask<String, String, HttpByteArrayDownloadUtil.Result>{
+public abstract class HttpByteArrayDownloadUtil extends AsyncTask<String, String, HttpByteArrayDownloadUtil.Result>{
 
 
     private int maxBufferSize = 1024*1024*16;
     private int minBufferSize = 1024*128;
     private int incBufferSize = 1024*64;
     private int readBufferSize = 1460;
+    private static int threadCount = 0;
+    private static int maxThreadCount = 3;
 
     public int getMaxBufferSize() {
         return maxBufferSize;
@@ -65,10 +67,27 @@ public class HttpByteArrayDownloadUtil extends AsyncTask<String, String, HttpByt
     }
 
     @Override
+    protected void onPostExecute(Result result) {
+        super.onPostExecute(result);
+        doAfterPostExecute(result);
+        threadCount--;
+    }
+
+    abstract protected void doAfterPostExecute(Result result);
+
+    @Override
     protected Result doInBackground(String... strings) {
         URL website = null;
         Result result = new Result();
         try {
+            while (threadCount>=maxThreadCount){
+                try {
+                   Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            threadCount++;
             website = new URL(strings[0]);
             BufferedInputStream in = new BufferedInputStream(website.openStream());
             byte dataBuffer[] = new byte[minBufferSize];

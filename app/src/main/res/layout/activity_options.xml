@@ -15,7 +15,7 @@
 
         <TextView
             style="@style/H2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Szerver beállításai" />
 
@@ -35,13 +35,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/P"
                 android:tooltipText="http://szerver.hu:1234" />
-
-            <Button
-                android:id="@+id/options_random"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Random" />
 
         </LinearLayout>
 
@@ -55,6 +50,7 @@
             android:id="@+id/options_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/P"
             android:tooltipText="http://szerver.hu:1234" />
 
 
@@ -74,7 +70,7 @@
 
         <TextView
             style="@style/H2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Megjelenítés" />
 
@@ -87,7 +83,7 @@
 
         <TextView
             style="@style/H2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Beállítások visszaállítása" />
 
@@ -104,6 +100,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Alapértelmezett értékek visszaállítása" />
+
+        <Button
+            android:id="@+id/options_random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Véletlenszerű adatok generálása" />
 
     </LinearLayout>
 </ScrollView>

@@ -98,14 +98,20 @@ public class NumberImageView extends ImageView implements NumberSensor {
         }
     }
 
+
     @Override
-    public void onDrawForeground(Canvas canvas) {
-        fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1.5f, getResources().getDisplayMetrics());
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        //fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1.5f, getResources().getDisplayMetrics());
+        fontSize = (float) getWidth() / 10.0f;
         Paint txtPaint = new Paint();
-        super.onDrawForeground(canvas);
         txtPaint.setAntiAlias(true);
         txtPaint.setTextSize(getFontSize(1));
-        txtPaint.setColor(Color.BLACK);
+        if (data!=null) {
+            txtPaint.setColor(data.getColor());
+        }else{
+            txtPaint.setColor(Color.BLACK);
+        }
         String w = String.format("%." + decimal + "f", value) + " " + suffix;
         canvas.drawText(w, getWidth()/2 - txtPaint.measureText(w)/2,  getHeight()-txtPaint.getTextSize()*0.8f, txtPaint);
     }
@@ -144,8 +150,7 @@ public class NumberImageView extends ImageView implements NumberSensor {
         if (config.icon != null && config.icon != "") {
             new HttpByteArrayDownloadUtil(){
                 @Override
-                protected void onPostExecute(Result bytes) {
-                    super.onPostExecute(bytes);
+                protected void doAfterPostExecute(Result bytes) {
                     if (bytes.errorCode == ErrorCode.OK) {
                         resImage = BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length);
                         if (resImage != null) {

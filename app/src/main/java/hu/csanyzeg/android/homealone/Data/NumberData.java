@@ -93,7 +93,9 @@ abstract public class NumberData extends Data<Double> {
     public String getAlarmText() {
         return config.alarmText.replace("%current", String.format("%." + config.precision + "f", currentValue()))
                 .replace("%alarmmin", String.format("%." + config.precision + "f",config.alarmMinValue))
-                .replace("%alarmmax", String.format("%." + config.precision + "f",config.alarmMaxValue));
+                .replace("%alarmmax", String.format("%." + config.precision + "f",config.alarmMaxValue))
+                .replace("%minvalue", String.format("%." + config.precision + "f",config.alarmMinValue))
+                .replace("%maxvalue", String.format("%." + config.precision + "f",config.alarmMaxValue));
     }
 
     @Override

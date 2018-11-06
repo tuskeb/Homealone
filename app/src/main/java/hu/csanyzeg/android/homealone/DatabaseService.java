@@ -255,6 +255,7 @@ public class DatabaseService extends IntentService {
                 HashMap<String, String> get = new HashMap<>();
                 get.put("format", "xml");
                 get.put("full", "1");
+                get.put("SID", Config.session_id);
                 get.put("start", simpleDateFormat.format(startDataTime));
                 get.put("stop", simpleDateFormat.format(stopDataTime));
                 new HttpDownloadUtil() {

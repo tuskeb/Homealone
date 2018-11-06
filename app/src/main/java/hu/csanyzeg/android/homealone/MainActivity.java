@@ -1,16 +1,20 @@
 package hu.csanyzeg.android.homealone;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void setDatabaseService(DatabaseService databaseService) {
         this.databaseService = databaseService;
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -66,10 +71,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 return super.onOptionsItemSelected(item);
         }
     }
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
@@ -85,6 +92,50 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
         Intent i= new Intent(getApplicationContext(), DatabaseService.class);
         startService(i);
+
+        findViewById(R.id.about_menu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.options_menu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, OptionsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.exit_menu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+                alert.setTitle("Kilépés a Homealone alkalmazásból");
+                alert.setMessage("Amennyiben bezárja az alkalmazást, nem kap további figyelmeztetéseket. Folytatja a műveletet?");
+
+                alert.setPositiveButton("Igen", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        databaseService.onDestroy();
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        System.exit(1);
+                    }
+                });
+
+                alert.setNegativeButton("Nem", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                    }
+                });
+
+                alert.show();
+            }
+        });
+
     }
 
 

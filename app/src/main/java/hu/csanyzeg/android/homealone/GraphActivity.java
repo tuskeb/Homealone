@@ -284,6 +284,7 @@ public class GraphActivity extends AppCompatActivity implements ServiceConnectio
 
                     HashMap<String, String> get = new HashMap<>();
                     get.put("format", "xml");
+                    get.put("SID", Config.session_id);
                     get.put("field", n.getConfig().id);
                     get.put("full", "1");
                     get.put("start", simpleDateFormat.format(startDataTime));

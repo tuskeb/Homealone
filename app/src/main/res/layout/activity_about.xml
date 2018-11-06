@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sw"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffffff">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,58 +11,110 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="hu.csanyzeg.android.homealone.AboutActivity">
-    <TextView
-        android:layout_width="wrap_content"
+    <ImageView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arduino Team"
+        android:src="@drawable/logo"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Arduino team"
         style="@style/H2"
         />
     <TextView
-        style="@style/P"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Felkészítő tanár: Könye Attila"
-        />
-    <TextView
-        style="@style/P"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tanulók: "
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Raspberry PI Team"
-        style="@style/H2"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Felkészítő tanár: Szabolcs Szilárd"
         style="@style/P"
         />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tanulók: "
         style="@style/P"
         />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arduino Team"
+        android:text="Ágh László\nBalogh Miklós\nBorsos Violetta\nÉletes Márk\nKollár Gergő\nNémeth János\nRigó Zsolt\nSipos Erik\nTamás Tibor\nTóth Ábrahám\nVéber Péter"
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Android team"
         style="@style/H2"
         />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Felkészítő tanár: Tüske Balázs"
         style="@style/P"
         />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tanulók: "
         style="@style/P"
         />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Berghoffer Martin\nBoncz Bence\nHorváth Martin\nMegyesi Ádám\nMózer Bence\nOlasz Ákos\nTóth István"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dokumentációs team"
+        style="@style/H2"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Mészáros Anna"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tanulók:"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Borsos Bence\nGut Dávid\nKovács Virág\nTuri Diána"
+        />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PC team"
+        style="@style/H2"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Szabolcs Szilárd"
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tanulók: "
+        style="@style/P"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tóth István\nHorváth Martin"
+        />
+
 </LinearLayout>
+</ScrollView>

@@ -63,7 +63,7 @@ public class SwitchFullBoolSensorView extends GraphBoolSensorView implements Swi
                     alert.setTitle(getConfig().display);
                     alert.setMessage("A légvonalban mért távolság otthonról nagyobb, mint " + String.format("%.0f", getConfig().distance) + " m. Folytatja a műveletet?");
 
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    alert.setPositiveButton("Igen", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             cancel[0] = false;
                             setValue(true);
@@ -73,7 +73,7 @@ public class SwitchFullBoolSensorView extends GraphBoolSensorView implements Swi
                         }
                     });
 
-                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    alert.setNegativeButton("Nem", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             cancel[0] = true;
                             setValue(false);

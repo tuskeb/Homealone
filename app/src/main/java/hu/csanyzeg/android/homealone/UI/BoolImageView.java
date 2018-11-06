@@ -188,8 +188,7 @@ public class BoolImageView extends ImageView implements BoolSensor, Switch {
         if (config.iconOn != null && config.iconOff != null) {
             new HttpByteArrayDownloadUtil(){
                 @Override
-                protected void onPostExecute(Result bytes) {
-                    super.onPostExecute(bytes);
+                protected void doAfterPostExecute(Result bytes) {
                     if (bytes.errorCode == ErrorCode.OK) {
                         resTrue = BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length);
                         if (resTrue != null && resFalse != null) {
@@ -202,8 +201,7 @@ public class BoolImageView extends ImageView implements BoolSensor, Switch {
             }.execute(Config.houseViewURL + "/" + config.iconOn);
             new HttpByteArrayDownloadUtil(){
                 @Override
-                protected void onPostExecute(Result bytes) {
-                    super.onPostExecute(bytes);
+                protected void doAfterPostExecute(Result bytes) {
                     if (bytes.errorCode == ErrorCode.OK) {
                         resFalse = BitmapFactory.decodeByteArray(bytes.bytes, 0, bytes.bytes.length);
                         if (resTrue != null && resFalse != null) {

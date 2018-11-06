@@ -27,9 +27,9 @@ public class HttpImageView extends ImageView {
 
     public void setURL(String url){
         new HttpByteArrayDownloadUtil(){
+
             @Override
-            protected void onPostExecute(Result bytes) {
-                super.onPostExecute(bytes);
+            protected void doAfterPostExecute(Result bytes) {
                 if (bytes.errorCode == ErrorCode.OK) {
                     onImageDownloadComplete(bytes);
                 }else{

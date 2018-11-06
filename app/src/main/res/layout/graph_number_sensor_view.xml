@@ -4,6 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/graphNumberSensorViewLayout">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:src="@drawable/shadow"
+        android:scaleType="fitXY"
+        android:layout_marginTop="20dp"
+        android:alpha="0.6"
+        >
+
+    </ImageView>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +27,7 @@
             android:id="@+id/txt"
             android:paddingBottom="5dp"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
+            android:paddingTop="5dp"
             android:textSize="22dp"
             android:textStyle="italic"
             android:text="Label"
@@ -26,16 +36,16 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_weight="0.1"
-            android:paddingTop="15dp"
+            android:paddingTop="5dp"
             android:layout_height="match_parent" />
         <hu.csanyzeg.android.homealone.UI.NumberView
             android:layout_width="0dp"
-            android:paddingTop="15dp"
+            android:paddingTop="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="5dp"
             android:layout_weight="0.3"
             android:textStyle="italic"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:gravity="right|bottom"
             android:textSize="22dp"
             android:id="@+id/value"
