@@ -92,7 +92,7 @@ public class NumberImageView extends ImageView implements NumberSensor {
                 if (download){
                     setImageResource(R.drawable.imagesensorviewerror);
                 }else{
-                    setImageResource(R.drawable.imagesensorview);
+                    //setImageResource(R.drawable.imagesensorview);
                 }
             }
         }
@@ -103,7 +103,7 @@ public class NumberImageView extends ImageView implements NumberSensor {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1.5f, getResources().getDisplayMetrics());
-        fontSize = (float) getWidth() / 10.0f;
+        fontSize = (float) getWidth() / 8.0f;
         Paint txtPaint = new Paint();
         txtPaint.setAntiAlias(true);
         txtPaint.setTextSize(getFontSize(1));

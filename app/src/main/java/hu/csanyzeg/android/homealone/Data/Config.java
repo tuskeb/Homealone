@@ -70,12 +70,12 @@ public class Config implements Serializable {
     /**
      * A ház GPS koordinátája.
      */
-    public static Double gpsLatitude = null;
+    public static Double gpsLatitude = 0.0;
 
     /**
      * A ház GPS koordinátája.
      */
-    public static Double gpsLongitude = null;
+    public static Double gpsLongitude = 0.0;
 
     public static String gpscomment = null;
 

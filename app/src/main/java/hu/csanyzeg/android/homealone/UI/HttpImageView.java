@@ -12,17 +12,17 @@ import hu.csanyzeg.android.homealone.Utils.HttpByteArrayDownloadUtil;
 public class HttpImageView extends ImageView {
     public HttpImageView(Context context) {
         super(context);
-        setImageResource(R.drawable.imagesensorview);
+        //setImageResource(R.drawable.imagesensorview);
     }
 
     public HttpImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setImageResource(R.drawable.imagesensorview);
+        //setImageResource(R.drawable.imagesensorview);
     }
 
     public HttpImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setImageResource(R.drawable.imagesensorview);
+        //setImageResource(R.drawable.imagesensorview);
     }
 
     public void setURL(String url){

@@ -146,7 +146,7 @@ public class BoolImageView extends ImageView implements BoolSensor, Switch {
                 if (download){
                     setImageResource(R.drawable.imagesensorviewerror);
                 }else{
-                    setImageResource(R.drawable.imagesensorview);
+                    //setImageResource(R.drawable.imagesensorview);
                 }
             }
         }
