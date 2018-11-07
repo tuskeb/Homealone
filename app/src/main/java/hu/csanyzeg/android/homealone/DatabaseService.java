@@ -14,6 +14,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import hu.csanyzeg.android.homealone.Data.BoolData;
 import hu.csanyzeg.android.homealone.Data.Config;
@@ -624,6 +625,7 @@ public class DatabaseService extends IntentService {
     private void readConfig(){
         readConfigInProgress = true;
         //System.out.println("ReadConfig - --------------------------------");
+        //Log.e("Homealone", serverURL);
         //System.out.println(serverURL);
         HashMap<String, String> get = new HashMap<>();
         get.put("format", "ini");
@@ -669,7 +671,7 @@ public class DatabaseService extends IntentService {
                 }
 
             };
-            configHttpDownloadUtil.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.POST, get, get));
+            configHttpDownloadUtil.download(new HttpDownloadUtil.HttpRequestInfo(serverURL, HttpDownloadUtil.Method.GET, get, get));
         }
     }
 

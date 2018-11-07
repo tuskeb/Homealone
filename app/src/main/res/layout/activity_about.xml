@@ -37,7 +37,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ágh László\nBalogh Miklós\nBorsos Violetta\nÉletes Márk\nKollár Gergő\nNémeth János\nRigó Zsolt\nSipos Erik\nTamás Tibor\nTóth Ábrahám\nVéber Péter"
+        android:text="Ágh László\nBalogh Miklós\nBorsos Violetta\nMegyesi Ádám\nKollár Gergő\nNémeth János\nRigó Zsolt\nSipos Erik\nTamás Tibor\nTóth Ábrahám\nVéber Péter"
         style="@style/P"
         />
     <TextView
@@ -62,7 +62,7 @@
         style="@style/P"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Berghoffer Martin\nBoncz Bence\nHorváth Martin\nMegyesi Ádám\nMózer Bence\nOlasz Ákos\nTóth István"
+        android:text="Berghoffer Martin\nBoncz Bence\nHorváth Martin\nÉletes Márk\nMózer Bence\nOlasz Ákos\nTóth István"
         />
 
     <TextView
@@ -116,5 +116,30 @@
         android:text="Tóth István\nHorváth Martin"
         />
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Marketing team"
+        style="@style/H2"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Felkészítő tanár: Szládovics Bálint"
+        style="@style/P"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tanulók: "
+        style="@style/P"
+        />
+    <TextView
+        style="@style/P"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Berghoffer Martin\nKovács Kristóf\nHorváth Dániel\nHorváth Martin"
+        />
 </LinearLayout>
 </ScrollView>
